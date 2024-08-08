@@ -1,0 +1,84 @@
+version: 2
+
+models:
+
+### final
+# - name: eligibility
+#   description: Member eligibility at the month grain
+#   config:
+#     schema: |
+#       {%- if var('tuva_schema_prefix',None) != None -%}_{{var('tuva_schema_prefix')}}input_layer{% else %}input_layer{%- endif -%}
+#     materialized: table
+#
+# - name: medical_claim
+#   description: Claim line details of all claim types
+#   config:
+#     schema: |
+#       {%- if var('tuva_schema_prefix',None) != None -%}_{{var('tuva_schema_prefix')}}_input_layer{% else %}input_layer{%- endif -%}
+#     materialized: table
+#
+# - name: pharmacy_claim
+#   description: Claim line details of all claim types
+#   config:
+#     schema: |
+#       {%- if var('tuva_schema_prefix',None) != None -%}_{{var('tuva_schema_prefix')}}_input_layer{% else %}input_layer{%- endif -%}
+#     materialized: table
+#
+### intermediate
+# - name: carrier_claim
+#   description: Claim line details of carrier claims
+#   config:
+#     schema: |
+#       {%- if var('tuva_schema_prefix',None) != None -%}_{{var('tuva_schema_prefix')}}_input_layer{% else %}input_layer{%- endif -%}
+#
+# - name: dme_claim
+#   description: Claim line details of durable medical equipment claims
+#   config:
+#     schema: |
+#       {%- if var('tuva_schema_prefix',None) != None -%}_{{var('tuva_schema_prefix')}}_input_layer{% else %}input_layer{%- endif -%}
+#
+# - name: eligibility_unpivot
+#   description: >
+#     Transformation model to unpivot the Master Beneficiary Summary File 
+#     on DUAL_STUS_CD and MDCR_STATUS_CODE creating a row for each year/month 
+#     of eligibility.
+#   config:
+#     schema: |
+#       {%- if var('tuva_schema_prefix',None) != None -%}_{{var('tuva_schema_prefix')}}_input_layer{% else %}input_layer{%- endif -%}
+#
+# - name: home_health_claim
+#   description: Claim line details of home health claims
+#   config:
+#     schema: |
+#       {%- if var('tuva_schema_prefix',None) != None -%}_{{var('tuva_schema_prefix')}}_input_layer{% else %}input_layer{%- endif -%}
+#
+# - name: hospice_claim
+#   description: Claim line details of hospice claims
+#   config:
+#     schema: |
+#       {%- if var('tuva_schema_prefix',None) != None -%}_{{var('tuva_schema_prefix')}}_input_layer{% else %}input_layer{%- endif -%}
+#
+ - name: inpatient_claim
+   description: Claim line details of inpatient claims
+   config:
+     schema: |
+       {%- if var('tuva_schema_prefix',None) != None -%}_{{var('tuva_schema_prefix')}}_input_layer{% else %}input_layer{%- endif -%}
+     tags: connector
+#
+# - name: _int_medical_claim
+#   description: union of all medical claim tables
+#   config:
+#     schema: |
+#       {%- if var('tuva_schema_prefix',None) != None -%}_{{var('tuva_schema_prefix')}}_input_layer{% else %}input_layer{%- endif -%}
+#
+# - name: outpatient_claim
+#   description: Claim line details of outpatient claims
+#   config:
+#     schema: |
+#       {%- if var('tuva_schema_prefix',None) != None -%}_{{var('tuva_schema_prefix')}}_input_layer{% else %}input_layer{%- endif -%}
+#
+# - name: snf_claim
+#   description: Claim line details of skilled nursing facility claims
+#   config:
+#     schema: |
+#       {%- if var('tuva_schema_prefix',None) != None -%}_{{var('tuva_schema_prefix')}}_input_layer{% else %}input_layer{%- endif -%}

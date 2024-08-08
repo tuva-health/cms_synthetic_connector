@@ -1,0 +1,12 @@
+version: 2
+
+seeds:
+  - name: beneficiary
+  - name: carrier
+  - name: dme
+  - name: hha
+  - name: hospice
+  - name: inpatient
+  - name: outpatient
+  - name: pde
+  - name: snf

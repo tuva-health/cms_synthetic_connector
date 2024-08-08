@@ -1,0 +1,15 @@
+version: 2
+
+sources:
+  - name: cms_synthetic
+    database: "{{ var('input_database') }}"
+    schema:  "{{ var('input_schema') }}"
+    tables:
+      - name: carrier
+      - name: dme
+      - name: hha
+      - name: hospice
+      - name: inpatient
+      - name: beneficiary
+      - name: outpatient
+      - name: snf
