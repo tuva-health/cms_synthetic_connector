@@ -1,7 +1,7 @@
 with dme_base_claim as (
 
     select *
-         , left(clm_thru_dt,4) as clm_thru_dt_year
+         , right(clm_thru_dt,4) as clm_thru_dt_year
     from {{ source('cms_synthetic','dme') }}
     where carr_clm_pmt_dnl_cd <> '0'
     /** filter out denied claims **/
@@ -9,19 +9,19 @@ with dme_base_claim as (
 
 , claim_start_date as (
 
-  select l.claim_no
-  ,min(l.line_last_expns_dt) as claim_start_date
+  select clm_id
+  ,min(line_last_expns_dt) as claim_start_date
   from {{ source('cms_synthetic','dme') }} l
-  group by l.claim_no
+  group by clm_id
 )
 
 select
       /* Claim ID is not unique across claim types.  Concatenating original claim ID, claim year, and claim type. */
-      cast(b.claim_no as {{ dbt.type_string() }} )
+      cast(b.clm_id as {{ dbt.type_string() }} )
         || cast(b.clm_thru_dt_year as {{ dbt.type_string() }} )
         || cast(b.nch_clm_type_cd as {{ dbt.type_string() }} )
       as claim_id
-    , cast(l.clm_line_num as integer) as claim_line_number
+    , cast(line_num as integer) as claim_line_number
     , 'professional' as claim_type
     , cast(b.bene_id as {{ dbt.type_string() }} ) as patient_id
     , cast(b.bene_id as {{ dbt.type_string() }} ) as member_id
@@ -29,32 +29,32 @@ select
     , cast('medicare' as {{ dbt.type_string() }} ) as plan
     , {{ try_to_cast_date('c.claim_start_date', 'DD-MON-YYYY') }} as claim_start_date
     , {{ try_to_cast_date('b.clm_thru_dt', 'DD-MON-YYYY') }} as claim_end_date
-    , {{ try_to_cast_date('l.line_last_expns_dt', 'DD-MON-YYYY') }} as claim_line_start_date
-    , {{ try_to_cast_date('l.line_last_expns_dt', 'DD-MON-YYYY') }} as claim_line_end_date
+    , {{ try_to_cast_date('line_last_expns_dt', 'DD-MON-YYYY') }} as claim_line_start_date
+    , {{ try_to_cast_date('line_last_expns_dt', 'DD-MON-YYYY') }} as claim_line_end_date
     , date(NULL) as admission_date
     , date(NULL) as discharge_date
     , cast(NULL as {{ dbt.type_string() }} ) as admit_source_code
     , cast(NULL as {{ dbt.type_string() }} ) as admit_type_code
     , cast(NULL as {{ dbt.type_string() }} ) as discharge_disposition_code
-    , cast(l.line_place_of_srvc_cd as {{ dbt.type_string() }} ) as place_of_service_code
+    , cast(line_place_of_srvc_cd as {{ dbt.type_string() }} ) as place_of_service_code
     , cast(NULL as {{ dbt.type_string() }} ) as bill_type_code
     , cast(NULL as {{ dbt.type_string() }} ) as ms_drg_code
     , cast(NULL as {{ dbt.type_string() }} ) as apr_drg_code
     , cast(NULL as {{ dbt.type_string() }} ) as revenue_center_code
-    , cast(regexp_substr(l.line_srvc_cnt,'.') as integer) as service_unit_quantity
+    , cast(regexp_substr(line_srvc_cnt,'.') as integer) as service_unit_quantity
     , cast(hcpcs_cd as {{ dbt.type_string() }} ) as hcpcs_code
-    , cast(l.null as {{ dbt.type_string() }} ) as hcpcs_modifier_1
-    , cast(l.hcpcs_2nd_mdfr_cd as {{ dbt.type_string() }} ) as hcpcs_modifier_2
+    , cast(hcpcs_1st_mdfr_cd as {{ dbt.type_string() }} ) as hcpcs_modifier_1
+    , cast(hcpcs_2nd_mdfr_cd as {{ dbt.type_string() }} ) as hcpcs_modifier_2
     , cast(NULL as {{ dbt.type_string() }} ) as hcpcs_modifier_3
     , cast(NULL as {{ dbt.type_string() }} ) as hcpcs_modifier_4
     , cast(NULL as {{ dbt.type_string() }} ) as hcpcs_modifier_5
     , cast(null as {{ dbt.type_string() }} ) as rendering_npi
-    , cast(l.prvdr_npi as {{ dbt.type_string() }} ) as billing_npi
+    , cast(prvdr_npi as {{ dbt.type_string() }} ) as billing_npi
     , cast(NULL as {{ dbt.type_string() }} ) as facility_npi
     , date(NULL) as paid_date
-    , cast(l.line_nch_pmt_amt as {{ dbt.type_numeric() }}) as paid_amount
+    , cast(line_nch_pmt_amt as {{ dbt.type_numeric() }}) as paid_amount
     , cast(null as {{ dbt.type_numeric() }}) as allowed_amount
-    , cast(l.line_alowd_chrg_amt as {{ dbt.type_numeric() }}) as charge_amount
+    , cast(line_alowd_chrg_amt as {{ dbt.type_numeric() }}) as charge_amount
     , cast(null as {{ dbt.type_numeric() }}) as coinsurance_amount
     , cast(null as {{ dbt.type_numeric() }}) as copayment_amount
     , cast(null as {{ dbt.type_numeric() }}) as deductible_amount
@@ -170,9 +170,9 @@ select
     , date(NULL) as procedure_date_23
     , date(NULL) as procedure_date_24
     , date(NULL) as procedure_date_25
-    , 'medicare_lds' as data_source
+    , 'cms_synthetic' as data_source
     , 1 as in_network_flag
     , 'dme_claim' as file_name
     , cast(NULL as date ) as ingest_datetime    
 from dme_base_claim as b
-inner join claim_start_date c on b.claim_no = c.claim_no
+inner join claim_start_date c on b.clm_id = c.clm_id

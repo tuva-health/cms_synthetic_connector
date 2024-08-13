@@ -30,8 +30,8 @@ add_row_num as (
           ) as row_num
         , case
             when medicare_status in (null, '00') and dual_status in (null, '00', '99', 'NA') then 1
-            when hmo_status <> '0' then 1 --  MA coverage
-            when entitlement not in ('3','C') then 1 --Doesn't have both Part A and B
+            --when hmo_status <> '0' then 1 --  MA coverage
+            --when entitlement not in ('3','C') then 1 --Doesn't have both Part A and B
             else 0
           end as disenrolled_flag
     from eligibility_unpivot
@@ -168,7 +168,7 @@ joined as (
         , cast(medicare_state_fips.ssa_fips_state_name as {{ dbt.type_string() }} ) as state
         , cast(NULL as {{ dbt.type_string() }} ) as zip_code
         , cast(NULL as {{ dbt.type_string() }} ) as phone
-        , 'medicare_lds' as data_source
+        , 'cms_synthetic' as data_source
         , 'master_beneficiary_summary' as file_name
         , cast(NULL as date ) as ingest_datetime
         

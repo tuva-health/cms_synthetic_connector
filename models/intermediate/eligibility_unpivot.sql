@@ -4,14 +4,20 @@ with demographics as (
 
 ),
 
-unpivot_dual_status as (
+year_from_file as (
+select *
+,REGEXP_SUBSTR(source_file, '\\d{4}') AS reference_year
+from demographics
+)
+
+,unpivot_dual_status as (
 
     select
           bene_id
         , right(month,2) as month
         , reference_year as year
         , dual_status as dual_status
-    from demographics
+    from year_from_file
     unpivot(
             dual_status for month in (DUAL_STUS_CD_01
                                       ,DUAL_STUS_CD_02
@@ -36,7 +42,7 @@ unpivot_medicare_status as (
         , right(month,2) as month
         , reference_year as year
         , medicare_status
-    from demographics
+    from year_from_file
     unpivot(
             medicare_status for month in (MDCR_STATUS_CODE_01
                                           ,MDCR_STATUS_CODE_02
@@ -59,25 +65,25 @@ unpivot_medicare_status as (
 unpivot_hmo_status as (
     select
           bene_id
-        , case when LENGTH(month) = 14 then substring(month, 14, 1)  -- 'entitlement_buy_in_ind1' -> '1'
-               when LENGTH(month) = 15 then substring(month, 14, 2)  -- 'entitlement_buy_in_ind10' -> '10'
+        , case when LENGTH(month) = 14 then substring(month, 14, 1)  -- 'MDCR_ENTLMT_BUYIN_IND_1' -> '1'
+               when LENGTH(month) = 15 then substring(month, 14, 2)  -- 'MDCR_ENTLMT_BUYIN_IND_10' -> '10'
                else null end as month
         , reference_year as year
         , hmo_status
-    from demographics
+    from year_from_file
     unpivot(
-            hmo_status for month in (HMO_INDICATOR1
-                                          ,HMO_INDICATOR2
-                                          ,HMO_INDICATOR3
-                                          ,HMO_INDICATOR4
-                                          ,HMO_INDICATOR5
-                                          ,HMO_INDICATOR6
-                                          ,HMO_INDICATOR7
-                                          ,HMO_INDICATOR8
-                                          ,HMO_INDICATOR9
-                                          ,HMO_INDICATOR10
-                                          ,HMO_INDICATOR11
-                                          ,HMO_INDICATOR12
+            hmo_status for month in (hmo_ind_01
+                                          ,hmo_ind_02
+                                          ,hmo_ind_03
+                                          ,hmo_ind_04
+                                          ,hmo_ind_05
+                                          ,hmo_ind_06
+                                          ,hmo_ind_07
+                                          ,hmo_ind_08
+                                          ,hmo_ind_09
+                                          ,hmo_ind_10
+                                          ,hmo_ind_11
+                                          ,hmo_ind_12
                                           )
             )p1
 
@@ -90,25 +96,25 @@ unpivot_entitlement as (
 
     select
           bene_id
-        , case when LENGTH(month) = 23 then substring(month, 23, 1)  -- 'entitlement_buy_in_ind1' -> '1'
-               when LENGTH(month) = 24 then substring(month, 23, 2)  -- 'entitlement_buy_in_ind10' -> '10'
+        , case when LENGTH(month) = 23 then substring(month, 23, 1)  -- 'MDCR_ENTLMT_BUYIN_IND_1' -> '1'
+               when LENGTH(month) = 24 then substring(month, 23, 2)  -- 'MDCR_ENTLMT_BUYIN_IND_10' -> '10'
                else null end as month
         , reference_year as year
         , entitlement
-    from demographics
+    from year_from_file
     unpivot(
-            entitlement for month in (entitlement_buy_in_ind1
-                                          ,entitlement_buy_in_ind2
-                                          ,entitlement_buy_in_ind3
-                                          ,entitlement_buy_in_ind4
-                                          ,entitlement_buy_in_ind5
-                                          ,entitlement_buy_in_ind6
-                                          ,entitlement_buy_in_ind7
-                                          ,entitlement_buy_in_ind8
-                                          ,entitlement_buy_in_ind9
-                                          ,entitlement_buy_in_ind10
-                                          ,entitlement_buy_in_ind11
-                                          ,entitlement_buy_in_ind12
+            entitlement for month in (MDCR_ENTLMT_BUYIN_IND_01
+                                          ,MDCR_ENTLMT_BUYIN_IND_02
+                                          ,MDCR_ENTLMT_BUYIN_IND_03
+                                          ,MDCR_ENTLMT_BUYIN_IND_04
+                                          ,MDCR_ENTLMT_BUYIN_IND_05
+                                          ,MDCR_ENTLMT_BUYIN_IND_06
+                                          ,MDCR_ENTLMT_BUYIN_IND_07
+                                          ,MDCR_ENTLMT_BUYIN_IND_08
+                                          ,MDCR_ENTLMT_BUYIN_IND_09
+                                          ,MDCR_ENTLMT_BUYIN_IND_10
+                                          ,MDCR_ENTLMT_BUYIN_IND_11
+                                          ,MDCR_ENTLMT_BUYIN_IND_12
                                           )
             )p1
 
@@ -116,16 +122,16 @@ unpivot_entitlement as (
 
 
 select
-      demographics.bene_id as bene_id
-    , demographics.age as age
-    , demographics.sex_code as sex_code
-    , demographics.race_code as race_code
-    , demographics.state_code as state_code
-    , demographics.date_of_death as date_of_death
-    , demographics.hi_coverage as hi_coverage
-    , demographics.smi_coverage as smi_coverage
-    , demographics.hmo_coverage as hmo_coverage
-    , demographics.orig_reason_for_entitlement as orig_reason_for_entitlement
+      year_from_file.bene_id as desy_sort_key
+    , year_from_file.age_at_end_ref_yr as age
+    , year_from_file.sex_ident_cd as sex_code
+    , year_from_file.bene_race_cd as race_code
+    , year_from_file.state_code as state_code
+    , year_from_file.bene_death_dt as date_of_death
+    , year_from_file.BENE_HI_CVRAGE_TOT_MONS as hi_coverage
+    , year_from_file.BENE_SMI_CVRAGE_TOT_MONS as smi_coverage
+    , year_from_file.BENE_HMO_CVRAGE_TOT_MONS as hmo_coverage
+    , year_from_file.ENTLMT_RSN_ORIG as orig_reason_for_entitlement
     , unpivot_dual_status.dual_status as dual_status
     , unpivot_medicare_status.medicare_status as medicare_status
     , unpivot_dual_status.month as month
@@ -136,10 +142,10 @@ select
       ) as year_month
     , unpivot_hmo_status.hmo_status
     , unpivot_entitlement.entitlement
-from demographics
+from year_from_file
      inner join unpivot_dual_status
-         on demographics.bene_id = unpivot_dual_status.bene_id
-         and demographics.reference_year = unpivot_dual_status.year
+         on year_from_file.bene_id = unpivot_dual_status.bene_id
+         and year_from_file.reference_year = unpivot_dual_status.year
      left join unpivot_medicare_status
          on unpivot_dual_status.bene_id = unpivot_medicare_status.bene_id
          and unpivot_dual_status.month = unpivot_medicare_status.month

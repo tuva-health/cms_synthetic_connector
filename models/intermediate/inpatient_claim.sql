@@ -1,7 +1,7 @@
 with inpatient_base_claim as (
 select 
   *
-, left(clm_thru_dt,4) as clm_thru_dt_year
+, right(clm_thru_dt,4) as clm_thru_dt_year
 from {{ source('cms_synthetic','inpatient') }}
 ),
 
@@ -17,20 +17,23 @@ from inpatient_base_claim
 header_payment as (
 select
   claim_id
+  ,clm_line_num
 , sum(cast(clm_pmt_amt as {{ dbt.type_numeric() }})) as paid_amount
 , sum(cast(clm_tot_chrg_amt as {{ dbt.type_numeric() }})) as charge_amount
 from add_claim_id
-group by 1
+where clm_line_num =1
+group by   claim_id
+  ,clm_line_num
 ) 
 
 select
       b.claim_id
-    , cast(clm_line_num as integer) as claim_line_number
+    , cast(b.clm_line_num as integer) as claim_line_number
     , 'institutional' as claim_type
     , cast(b.bene_id as {{ dbt.type_string() }} ) as patient_id
     , cast(b.bene_id as {{ dbt.type_string() }} ) as member_id
-    , cast('medicare_synthetic' as {{ dbt.type_string() }} ) as payer
-    , cast('medicare_synthetic' as {{ dbt.type_string() }} ) as plan
+    , cast('medicare' as {{ dbt.type_string() }} ) as payer
+    , cast('medicare' as {{ dbt.type_string() }} ) as plan
     , {{ try_to_cast_date('b.clm_admsn_dt', 'DD-MON-YYYY') }} as claim_start_date
     , {{ try_to_cast_date('b.clm_thru_dt', 'DD-MON-YYYY') }} as claim_end_date
     , {{ try_to_cast_date('b.clm_thru_dt', 'DD-MON-YYYY') }} as claim_line_start_date
@@ -39,7 +42,7 @@ select
     , {{ try_to_cast_date('b.nch_bene_dschrg_dt', 'DD-MON-YYYY') }} as discharge_date
     , cast(b.clm_src_ip_admsn_cd as {{ dbt.type_string() }} ) as admit_source_code
     , cast(b.clm_ip_admsn_type_cd as {{ dbt.type_string() }} ) as admit_type_code
-    , cast(b.ptnt_dschrg_stus_cd as {{ dbt.type_string() }} ) as discharge_disposition_code
+    , cast(right('00' || b.ptnt_dschrg_stus_cd,2)  as {{ dbt.type_string() }} ) as discharge_disposition_code
     , cast(NULL as {{ dbt.type_string() }} ) as place_of_service_code
     , cast(b.clm_fac_type_cd as {{ dbt.type_string() }} )
         || cast(b.clm_srvc_clsfctn_type_cd as {{ dbt.type_string() }} )
@@ -47,7 +50,8 @@ select
       as bill_type_code
     , cast(b.clm_drg_cd as {{ dbt.type_string() }} ) as ms_drg_code
     , cast(NULL as {{ dbt.type_string() }} ) as apr_drg_code
-    , cast(rev_cntr as {{ dbt.type_string() }} ) as revenue_center_code
+    , cast(case when rev_cntr in ('0450','0451','0452','0459','0981') then rev_cntr
+                else '0120' end as {{ dbt.type_string() }} ) as revenue_center_code
     , cast(null as integer) as service_unit_quantity
     , cast(hcpcs_cd as {{ dbt.type_string() }} ) as hcpcs_code
     , cast(null as {{ dbt.type_string() }} ) as hcpcs_modifier_1
@@ -168,9 +172,11 @@ select
     , {{ try_to_cast_date('b.prcdr_dt23', 'DD-MON-YYYY') }} as procedure_date_23
     , {{ try_to_cast_date('b.prcdr_dt24', 'DD-MON-YYYY') }} as procedure_date_24
     , {{ try_to_cast_date('b.prcdr_dt25', 'DD-MON-YYYY') }} as procedure_date_25
-    , 'medicare_synthetic' as data_source
+    , 'cms_synthetic' as data_source
     , 1 as in_network_flag
     , 'inpatient_claim' as file_name
     , cast(NULL as date ) as ingest_datetime
 from add_claim_id as b
-inner join header_payment p on b.claim_id = p.claim_id
+left join header_payment p on b.claim_id = p.claim_id
+and
+p.clm_line_num = b.clm_line_num

@@ -1,27 +1,42 @@
 with outpatient_base_claim as (
 
     select *
-         , left(clm_thru_dt,4) as clm_thru_dt_year
+         , right(clm_thru_dt,4) as clm_thru_dt_year
     from {{ source('cms_synthetic','outpatient') }}
-    where clm_mdcr_non_pmt_rsn_cd is null
-    /** filter out denied claims **/
 )
 
 , claim_start_date as (
 
-  select l.claim_no
+  select l.clm_id
   ,min(coalesce(rev_cntr_dt,l.clm_thru_dt)) as claim_start_date
   from {{ source('cms_synthetic','outpatient') }} l
-  group by l.claim_no
+  group by l.clm_id
+)
+
+, header_payment as(
+    select
+        clm_id as claim_id
+        ,clm_line_num
+        , cast(clm_pmt_amt as {{ dbt.type_numeric() }}) as paid_amount
+        , /** medicare payment **/
+          cast(clm_pmt_amt as {{ dbt.type_numeric() }})
+          /** beneficiary payment **/
+        + cast(nch_bene_ptb_coinsrnc_amt as {{ dbt.type_numeric() }}) + cast(nch_bene_ptb_ddctbl_amt as {{ dbt.type_numeric() }}) + cast(nch_bene_blood_ddctbl_lblty_am as {{ dbt.type_numeric() }})
+          /** primary payer payment **/
+        + cast(nch_prmry_pyr_clm_pd_amt as {{ dbt.type_numeric() }})
+         as total_cost_amount
+        , cast(clm_tot_chrg_amt as {{ dbt.type_numeric() }}) as charge_amount
+    from outpatient_base_claim
+    where clm_line_num =1
 )
 
 select
       /* Claim ID is not unique across claim types.  Concatenating original claim ID, claim year, and claim type. */
-      cast(b.claim_no as {{ dbt.type_string() }} )
+      cast(b.clm_id as {{ dbt.type_string() }} )
         || cast(b.clm_thru_dt_year as {{ dbt.type_string() }} )
         || cast(b.nch_clm_type_cd as {{ dbt.type_string() }} )
       as claim_id
-    , cast(l.clm_line_num as integer) as claim_line_number
+    , cast(b.clm_line_num as integer) as claim_line_number
     , 'institutional' as claim_type
     , cast(b.bene_id as {{ dbt.type_string() }} ) as patient_id
     , cast(b.bene_id as {{ dbt.type_string() }} ) as member_id
@@ -35,7 +50,7 @@ select
     , date(NULL) as discharge_date
     , cast(NULL as {{ dbt.type_string() }} ) as admit_source_code
     , cast(NULL as {{ dbt.type_string() }} ) as admit_type_code
-    , cast(b.ptnt_dschrg_stus_cd as {{ dbt.type_string() }} ) as discharge_disposition_code
+    , cast(right('00' || b.ptnt_dschrg_stus_cd,2)  as {{ dbt.type_string() }} ) as discharge_disposition_code
     , cast(NULL as {{ dbt.type_string() }} ) as place_of_service_code
     , cast(b.clm_fac_type_cd as {{ dbt.type_string() }} )
         || cast(b.clm_srvc_clsfctn_type_cd as {{ dbt.type_string() }} )
@@ -46,14 +61,14 @@ select
     , cast(rev_cntr as {{ dbt.type_string() }} ) as revenue_center_code
     , cast(regexp_substr(rev_cntr_unit_cnt, '.') as integer) as service_unit_quantity
     , cast(hcpcs_cd as {{ dbt.type_string() }} ) as hcpcs_code
-    , cast(l.null as {{ dbt.type_string() }} ) as hcpcs_modifier_1
-    , cast(l.hcpcs_2nd_mdfr_cd as {{ dbt.type_string() }} ) as hcpcs_modifier_2
-    , cast(l.hcpcs_3rd_mdfr_cd as {{ dbt.type_string() }} ) as hcpcs_modifier_3
-    , cast(l.hcpcs_4th_mdfr_cd as {{ dbt.type_string() }} ) as hcpcs_modifier_4
+    , cast(hcpcs_1st_mdfr_cd as {{ dbt.type_string() }} ) as hcpcs_modifier_1
+    , cast(hcpcs_2nd_mdfr_cd as {{ dbt.type_string() }} ) as hcpcs_modifier_2
+    , cast(null as {{ dbt.type_string() }} ) as hcpcs_modifier_3
+    , cast(null as {{ dbt.type_string() }} ) as hcpcs_modifier_4
     , cast(NULL as {{ dbt.type_string() }} ) as hcpcs_modifier_5
     , cast(b.rndrng_physn_npi as {{ dbt.type_string() }} ) as rendering_npi
     , cast(b.org_npi_num as {{ dbt.type_string() }} ) as billing_npi
-    , cast(coalesce(b.org_npi_num,b.srvc_loc_npi_num) as {{ dbt.type_string() }} ) as facility_npi
+    , cast(b.org_npi_num as {{ dbt.type_string() }} ) as facility_npi
     , date(NULL) as paid_date
     , coalesce(
             p.paid_amount
@@ -167,10 +182,13 @@ select
     , {{ try_to_cast_date('b.prcdr_dt23', 'DD-MON-YYYY') }} as procedure_date_23
     , {{ try_to_cast_date('b.prcdr_dt24', 'DD-MON-YYYY') }} as procedure_date_24
     , {{ try_to_cast_date('b.prcdr_dt25', 'DD-MON-YYYY') }} as procedure_date_25
-    , 'medicare_lds' as data_source
+    , 'cms_synthetic' as data_source
     , 1 as in_network_flag
     , 'outpatient_claim' as file_name
     , cast(NULL as date ) as ingest_datetime
 from outpatient_base_claim as b
-
-left join claim_start_date c on b.claim_no = c.claim_no
+left join claim_start_date c on b.clm_id = c.clm_id
+left join header_payment p
+    on b.clm_id = p.claim_id
+and
+p.clm_line_num = b.clm_line_num

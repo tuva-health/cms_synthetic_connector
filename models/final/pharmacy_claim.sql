@@ -1,26 +1,26 @@
 select
-    cast(null as {{ dbt.type_string() }}) as CLAIM_ID
-    ,cast(null as {{ dbt.type_string() }}) as CLAIM_LINE_NUMBER
-    ,cast(null as {{ dbt.type_string() }}) as PATIENT_ID
-    ,cast(null as {{ dbt.type_string() }}) as MEMBER_ID
-    ,cast(null as {{ dbt.type_string() }}) as PAYER
-    ,cast(null as {{ dbt.type_string() }}) as PLAN
-    ,cast(null as {{ dbt.type_string() }}) as PRESCRIBING_PROVIDER_NPI
-    ,cast(null as {{ dbt.type_string() }}) as DISPENSING_PROVIDER_NPI
-    ,cast(null as date ) as DISPENSING_DATE
-    ,cast(null as {{ dbt.type_string() }}) as NDC_CODE
-    ,cast(null as int) as QUANTITY
-    ,cast(null as int) as DAYS_SUPPLY
-    ,cast(null as int) as REFILLS
-    ,cast(null as date) as PAID_DATE
-    ,cast(null as numeric) as CHARGE_AMOUNT
-    ,cast(null as numeric) as PAID_AMOUNT
-    ,cast(null as numeric) as ALLOWED_AMOUNT
-    ,cast(null as numeric) as COPAYMENT_AMOUNT
-    ,cast(null as numeric) as COINSURANCE_AMOUNT
-    ,cast(null as numeric) as DEDUCTIBLE_AMOUNT
-    ,cast(null as {{ dbt.type_string() }}) as DATA_SOURCE
-    ,cast(null as numeric) as in_network_flag
-    ,cast(null as {{ dbt.type_string() }}) as file_name
-    ,cast(NULL as date ) as ingest_datetime
-limit 0
+    CLAIM_ID
+    ,CLAIM_LINE_NUMBER
+    ,PATIENT_ID
+    ,MEMBER_ID
+    ,PAYER
+    ,PLAN
+    ,PRESCRIBING_PROVIDER_NPI
+    ,DISPENSING_PROVIDER_NPI
+    ,DISPENSING_DATE
+    ,NDC_CODE
+    ,QUANTITY
+    ,DAYS_SUPPLY
+    ,REFILLS
+    ,PAID_DATE
+    ,CHARGE_AMOUNT
+    ,PAID_AMOUNT
+    ,ALLOWED_AMOUNT
+    ,COPAYMENT_AMOUNT
+    ,COINSURANCE_AMOUNT
+    ,DEDUCTIBLE_AMOUNT
+    ,DATA_SOURCE
+    ,in_network_flag
+    ,file_name
+    ,ingest_datetime
+from {{ ref('_int_pharmacy_claim')}}
