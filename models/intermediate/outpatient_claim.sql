@@ -2,14 +2,14 @@ with outpatient_base_claim as (
 
     select *
          , right(clm_thru_dt,4) as clm_thru_dt_year
-    from {{ source('cms_synthetic','outpatient') }}
+    from {{ ref('outpatient') }}
 )
 
 , claim_start_date as (
 
   select l.clm_id
   ,min(coalesce(rev_cntr_dt,l.clm_thru_dt)) as claim_start_date
-  from {{ source('cms_synthetic','outpatient') }} l
+  from {{ ref('outpatient') }} l
   group by l.clm_id
 )
 

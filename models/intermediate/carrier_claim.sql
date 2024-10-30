@@ -2,7 +2,7 @@ with carrier_base_claim as (
 
     select *
          , right(clm_thru_dt,4) as clm_thru_dt_year
-    from {{ source('cms_synthetic','carrier') }}
+    from {{ ref('carrier') }}
     where carr_clm_pmt_dnl_cd <> '0'
     /** filter out denied claims **/
 
@@ -12,7 +12,7 @@ with carrier_base_claim as (
 
   select l.clm_id
   ,min(l.line_last_expns_dt) as claim_start_date
-  from {{ source('cms_synthetic','carrier') }} l
+  from {{ ref('carrier') }} l
   group by l.clm_id
 )
 

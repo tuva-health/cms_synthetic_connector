@@ -2,7 +2,7 @@ with hospice_base_claim as (
 
     select *
          , right(clm_thru_dt,4) as clm_thru_dt_year
-    from {{ source('cms_synthetic','hospice') }}
+    from {{ ref('hospice') }}
 
     /** filter out denied claims **/
 )
@@ -24,7 +24,7 @@ with hospice_base_claim as (
 , claim_start_date as (
   select l.clm_id
   ,min(rev_cntr_dt) as claim_start_date
-  from {{ source('cms_synthetic','hospice') }} l
+  from {{ ref('hospice') }} l
   group by l.clm_id
 )
 

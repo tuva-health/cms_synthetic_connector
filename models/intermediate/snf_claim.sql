@@ -2,7 +2,7 @@ with snf_base_claim as (
 
     select *
          , right(clm_thru_dt,4) as clm_thru_dt_year
-    from {{ source('cms_synthetic','snf') }}
+    from {{ ref('snf') }}
 
     /** filter out denied claims **/
 ),

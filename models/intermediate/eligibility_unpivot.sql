@@ -1,6 +1,6 @@
 with demographics as (
 
-    select * from {{ source('cms_synthetic','beneficiary') }}
+    select * from {{ ref('beneficiary') }}
 
 ),
 

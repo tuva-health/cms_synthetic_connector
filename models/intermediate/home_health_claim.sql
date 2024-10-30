@@ -2,7 +2,7 @@ with hha_base_claim as (
 
     select *
          , right(clm_thru_dt,4) as clm_thru_dt_year
-    from {{ source('cms_synthetic','hha') }}
+    from {{ ref('hha') }}
 
     /** filter out denied claims **/
 )
@@ -25,7 +25,7 @@ with hha_base_claim as (
 
   select l.clm_id
   ,min(coalesce(rev_cntr_dt,l.clm_thru_dt)) as claim_start_date
-  from {{ source('cms_synthetic','hha') }} l
+  from {{ ref('hha') }} l
   group by l.clm_id
 )
 
