@@ -26,6 +26,7 @@ inner join month_start_and_end_dates b
 select c.*
 ,cast(null as {{ dbt.type_string() }} ) as rendering_tin
 ,cast(null as {{ dbt.type_string() }} ) as billing_tin
+,c.member_id as person_id
 from {{ ref('_int_medical_claim') }} c
 inner join member_months mm on c.patient_id = mm.patient_id
 and

@@ -62,7 +62,7 @@ select
         || cast(b.clm_srvc_clsfctn_type_cd as {{ dbt.type_string() }})
         || cast(b.clm_freq_cd as {{ dbt.type_string() }})
       as bill_type_code
-    , cast(b.clm_drg_cd as {{ dbt.type_string() }}) as ms_drg_code
+    , cast(NULL as {{ dbt.type_string() }}) as ms_drg_code --null out DRG in data causing mapping issues
     , cast(NULL as {{ dbt.type_string() }}) as apr_drg_code
     , cast(rev_cntr as {{ dbt.type_string() }}) as revenue_center_code
     , cast(regexp_substr(rev_cntr_unit_cnt, '.') as integer) as service_unit_quantity

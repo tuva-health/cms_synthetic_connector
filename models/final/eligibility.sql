@@ -182,4 +182,6 @@ joined as (
 
 )
 
-select * from joined
+select *
+,member_id as person_id
+ from joined

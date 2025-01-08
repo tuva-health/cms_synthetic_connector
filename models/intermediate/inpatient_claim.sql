@@ -44,14 +44,14 @@ select
     , cast(b.clm_ip_admsn_type_cd as {{ dbt.type_string() }} ) as admit_type_code
     , cast(right('00' || b.ptnt_dschrg_stus_cd,2)  as {{ dbt.type_string() }} ) as discharge_disposition_code
     , cast(NULL as {{ dbt.type_string() }} ) as place_of_service_code
-    , cast(b.clm_fac_type_cd as {{ dbt.type_string() }} )
+    , case when rev_cntr in ('0450','0451','0452','0459','0981') then '131' else 
+           cast(b.clm_fac_type_cd as {{ dbt.type_string() }} )
         || cast(b.clm_srvc_clsfctn_type_cd as {{ dbt.type_string() }} )
-        || cast(b.clm_freq_cd as {{ dbt.type_string() }} )
+        || cast(b.clm_freq_cd as {{ dbt.type_string() }} ) end
       as bill_type_code
-    , cast(b.clm_drg_cd as {{ dbt.type_string() }} ) as ms_drg_code
+    , cast(case when rev_cntr in ('0450','0451','0452','0459','0981') then null else b.clm_drg_cd end as {{ dbt.type_string() }} ) as ms_drg_code
     , cast(NULL as {{ dbt.type_string() }} ) as apr_drg_code
-    , cast(case when rev_cntr in ('0450','0451','0452','0459','0981') then rev_cntr
-                else '0120' end as {{ dbt.type_string() }} ) as revenue_center_code
+    , cast(rev_cntr as {{ dbt.type_string() }} ) as revenue_center_code
     , cast(null as integer) as service_unit_quantity
     , cast(hcpcs_cd as {{ dbt.type_string() }} ) as hcpcs_code
     , cast(null as {{ dbt.type_string() }} ) as hcpcs_modifier_1

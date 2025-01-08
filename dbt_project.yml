@@ -29,24 +29,25 @@ clean-targets:
   - "dbt_packages"
 
 seeds:
-  cms_synthetic:
+  cms_synthetic_connector:
     beneficiary:
-      +post-hook: "{{ the_tuva_project.load_seed('tuva-public-resources/cms-synthetic','beneficiary.csv',headers=true) }}"
+      +post-hook: "{{ the_tuva_project.load_seed('tuva-public-resources/cms-synthetic','beneficiary.csv', compression=true, null_marker=true) }}"
     carrier:
-      +post-hook: "{{ the_tuva_project.load_seed('tuva-public-resources/cms-synthetic','carrier.csv',headers=true) }}"
+      +post-hook: "{{ the_tuva_project.load_seed('tuva-public-resources/cms-synthetic','carrier.csv', compression=true, null_marker=true) }}"
     dme:
-      +post-hook: "{{ the_tuva_project.load_seed('tuva-public-resources/cms-synthetic','dme.csv',headers=true) }}"
+      +post-hook: "{{ the_tuva_project.load_seed('tuva-public-resources/cms-synthetic','dme.csv', compression=true, null_marker=true) }}"
     hha:
-      +post-hook: "{{ the_tuva_project.load_seed('tuva-public-resources/cms-synthetic','hha.csv',headers=true) }}"
+      +post-hook: "{{ the_tuva_project.load_seed('tuva-public-resources/cms-synthetic','hha.csv', compression=true, null_marker=true) }}"
     hospice:
-      +post-hook: "{{ the_tuva_project.load_seed('tuva-public-resources/cms-synthetic','hospice.csv',headers=true) }}"
+      +post-hook: "{{ the_tuva_project.load_seed('tuva-public-resources/cms-synthetic','hospice.csv', compression=true, null_marker=true) }}"
     inpatient:
-      +post-hook: "{{ the_tuva_project.load_seed('tuva-public-resources/cms-synthetic','inpatient.csv',headers=true) }}"
+      +post-hook: "{{ the_tuva_project.load_seed('tuva-public-resources/cms-synthetic','inpatient.csv', compression=true, null_marker=true) }}"
     outpatient:
-      +post-hook: "{{ the_tuva_project.load_seed('tuva-public-resources/cms-synthetic','outpatient.csv',headers=true) }}"
+      +post-hook: "{{ the_tuva_project.load_seed('tuva-public-resources/cms-synthetic','outpatient.csv', compression=true, null_marker=true) }}"
     pde:
-      +post-hook: "{{ the_tuva_project.load_seed('tuva-public-resources/cms-synthetic','pde.csv',headers=true) }}"
+      +post-hook: "{{ the_tuva_project.load_seed('tuva-public-resources/cms-synthetic','pde.csv', compression=true, null_marker=true) }}"
     snf:
-      +post-hook: "{{ the_tuva_project.load_seed('tuva-public-resources/cms-synthetic','snf.csv',headers=true) }}"
+      +post-hook: "{{ the_tuva_project.load_seed('tuva-public-resources/cms-synthetic','snf.csv', compression=true, null_marker=true) }}"
+
 
 
