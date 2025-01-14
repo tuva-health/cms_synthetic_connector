@@ -5,7 +5,7 @@
 ## 🧰 What does this project do?
 
 This demo provides a quick and easy way to run the Tuva Project 
-Package in a dbt project with synthetic data for 1k patients loaded as dbt seeds.
+This project loads the 10k synthetic members and claims from the [CMS Synthetic](https://data.cms.gov/collection/synthetic-medicare-enrollment-fee-for-service-claims-and-prescription-drug-event) dataset as seed files. It then transforms them to the Tuva Project input layer.
 
 To set up the Tuva Project with your own claims data or to better understand what the Tuva Project does, please review the ReadMe in [The Tuva Project](https://github.com/tuva-health/the_tuva_project) package for a detailed walkthrough and setup.
 
@@ -13,9 +13,7 @@ For information on data models and to view the entire DAG check out our dbt [Doc
 
 ## 🔌 Database Support
 
-- BigQuery
-- Redshift
-- Snowflake
+Currently, this has only been tested on Snowflake. It likely needs small syntax adjustments to work on other database types.
 
 ## ✅ How to get started
 
