@@ -4,7 +4,8 @@
 
 ## 🧰 What does this project do?
 
-This demo provides a quick and easy way to run the Tuva Project 
+This demo provides a quick and easy way to run the Tuva Project.
+ 
 This project loads the 10k synthetic members and claims from the [CMS Synthetic](https://data.cms.gov/collection/synthetic-medicare-enrollment-fee-for-service-claims-and-prescription-drug-event) dataset as seed files. It then transforms them to the Tuva Project input layer.
 
 To set up the Tuva Project with your own claims data or to better understand what the Tuva Project does, please review the ReadMe in [The Tuva Project](https://github.com/tuva-health/the_tuva_project) package for a detailed walkthrough and setup.
