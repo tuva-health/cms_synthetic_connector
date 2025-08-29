@@ -159,8 +159,12 @@ joined as (
         , cast(eligibility_unpivot.orig_reason_for_entitlement as {{ dbt.type_string() }} ) as original_reason_entitlement_code
         , cast(eligibility_unpivot.dual_status as {{ dbt.type_string() }} ) as dual_status_code
         , cast(eligibility_unpivot.medicare_status as {{ dbt.type_string() }} ) as medicare_status_code
+        , cast(NULL as {{ dbt.type_string() }} ) as name_suffix
         , cast(NULL as {{ dbt.type_string() }} ) as first_name
+        , cast(NULL as {{ dbt.type_string() }} ) as middle_name
         , cast(NULL as {{ dbt.type_string() }} ) as last_name
+        , cast(NULL as {{ dbt.type_string() }} ) as email
+        , cast(NULL as {{ dbt.type_string() }} ) as ethnicity
         , cast(NULL as {{ dbt.type_string() }} ) as social_security_number
         , 'self' as subscriber_relation
         , cast(NULL as {{ dbt.type_string() }} ) as address
@@ -183,5 +187,5 @@ joined as (
 )
 
 select *
-,member_id as person_id
- from joined
+     , member_id as person_id
+from joined
