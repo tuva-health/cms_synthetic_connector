@@ -22,6 +22,7 @@ select
     ,DATA_SOURCE
     ,in_network_flag
     ,file_name
+    ,file_date
     ,ingest_datetime
     ,member_id as person_id
 from {{ ref('_int_pharmacy_claim')}}

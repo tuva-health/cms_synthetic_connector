@@ -174,6 +174,7 @@ select
     , 'cms_synthetic' as data_source
     , 1 as in_network_flag
     , 'carrier_claim' as file_name
+    , cast(NULL as date ) as file_date
     , cast(NULL as date ) as ingest_datetime
     
 from carrier_base_claim as b
