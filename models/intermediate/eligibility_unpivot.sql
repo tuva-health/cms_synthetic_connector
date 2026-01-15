@@ -6,7 +6,7 @@ with demographics as (
 
 year_from_file as (
 select *
-,REGEXP_SUBSTR(source_file, '\\d{4}') AS reference_year
+,{{ regexp_substr("source_file", "'\\d{4}'") }}  AS reference_year
 from demographics
 )
 
