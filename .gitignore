@@ -9,3 +9,4 @@ package-lock.yml
 .direnv/
 .env
 .envrc
+requirements.txt
