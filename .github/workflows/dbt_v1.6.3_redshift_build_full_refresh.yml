@@ -41,7 +41,6 @@ jobs:
 
 #######  Redshift
   redshift_clinical_and_claims_enabled:
-    needs: sqlfluff-lint
     runs-on: ubuntu-latest
 
     steps:
