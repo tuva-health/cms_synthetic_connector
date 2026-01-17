@@ -1,11 +1,16 @@
 name: Snowflake CICD Full Refresh
 
 on:
-  push:
   pull_request:
     branches:
       - main
   workflow_dispatch: # Allows manual trigger from UI
+
+concurrency:
+  # Ensure only one instance of this workflow runs across all PRs to prevent database conflicts
+  group: ci-testing
+  # Don't cancel in-progress runs automatically
+  cancel-in-progress: false
 
 env:
   # 1. Define where your dbt project lives relative to the repo root
