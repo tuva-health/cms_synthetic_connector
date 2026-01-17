@@ -34,7 +34,7 @@ jobs:
       DBT_SNOWFLAKE_DEV_CI_WAREHOUSE: ${{ secrets.DBT_SNOWFLAKE_CI_WAREHOUSE }}
 
     steps:
-      # 1. Checkout the code (Crucial step!)
+      # 1. Checkout the code
       - name: Checkout Code
         uses: actions/checkout@v4
 
@@ -55,7 +55,7 @@ jobs:
             echo "✅ Success: DBT_TUVA_SNOWFLAKE_ACCOUNT is found (Length: ${#MY_HOST})"
           fi
 
-      # 3. Install dbt-redshift
+      # 3. Install dbt-snowflake
       - name: Install dbt
         run: pip install dbt-snowflake
 
@@ -65,7 +65,7 @@ jobs:
         run: dbt deps --profiles-dir ./integration_tests/profiles/snowflake
 
       # 5. Debug Connection (Optional but recommended)
-      # This checks if profiles.yml can connect to Redshift
+      # This checks if profiles.yml can connect to Snowflake
       - name: Test Connection
         working-directory: ${{ env.DBT_PROJECT_DIR }}
         run: dbt debug --profiles-dir ./integration_tests/profiles/snowflake

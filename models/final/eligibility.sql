@@ -159,7 +159,7 @@ joined as (
         , cast(eligibility_unpivot.orig_reason_for_entitlement as {{ dbt.type_string() }} ) as original_reason_entitlement_code
         , cast(eligibility_unpivot.dual_status as {{ dbt.type_string() }} ) as dual_status_code
         , cast(eligibility_unpivot.medicare_status as {{ dbt.type_string() }} ) as medicare_status_code
-        , cast(NULL as {{ dbt.type_string() }} ) as enrollment_statusdb
+        , cast(NULL as {{ dbt.type_string() }} ) as enrollment_status
         , cast(NULL as {{ dbt.type_string() }} ) as hospice_flag
         , cast(NULL as {{ dbt.type_string() }} ) as institutional_snp_flag
         , cast(NULL as {{ dbt.type_string() }} ) as long_term_institutional_flag
