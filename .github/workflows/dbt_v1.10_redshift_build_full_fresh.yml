@@ -1,0 +1,61 @@
+name: Run dbt on Redshift
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch: # Allows manual trigger from UI
+
+env:
+  # 1. Define where your dbt project lives relative to the repo root
+  # If dbt is in the root, leave this as "."
+  # If dbt is in a subfolder, change to "./my_dbt_folder"
+  DBT_PROJECT_DIR: "." 
+
+jobs:
+  dbt_run:
+    name: dbt Run & Test
+    runs-on: ubuntu-latest
+
+    # Set the environment variables dbt needs to connect
+    env:
+      REDSHIFT_HOST: ${{ secrets.DBT_REDSHIFT_HOST }}
+      REDSHIFT_USER: ${{ secrets.DBT_REDSHIFT_CI_USER }}
+      REDSHIFT_PASSWORD: ${{ secrets.DBT_REDSHIFT_CI_PASSWORD }}
+      REDSHIFT_DB: ${{ secrets.DBT_REDSHIFT_DEMO_DATABASE }}
+
+    steps:
+      # 1. Checkout the code (Crucial step!)
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # 2. Install Python
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      # 3. Install dbt-redshift
+      - name: Install dbt
+        run: pip install dbt-redshift
+
+      # 4. Install dbt dependencies (if you have packages.yml)
+      - name: Install dbt dependencies
+        working-directory: ${{ env.DBT_PROJECT_DIR }}
+        run: dbt deps
+
+      # 5. Debug Connection (Optional but recommended)
+      # This checks if profiles.yml can connect to Redshift
+      - name: Test Connection
+        working-directory: ${{ env.DBT_PROJECT_DIR }}
+        run: dbt debug
+
+      # 6. Run dbt models
+      - name: Run dbt models
+        working-directory: ${{ env.DBT_PROJECT_DIR }}
+        run: dbt run
+
+      # 7. Test dbt models
+      - name: Test dbt models
+        working-directory: ${{ env.DBT_PROJECT_DIR }}
+        run: dbt test
