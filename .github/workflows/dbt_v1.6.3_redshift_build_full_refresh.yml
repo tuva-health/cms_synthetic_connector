@@ -11,6 +11,7 @@ env:
   DBT_REDSHIFT_CI_USER: ${{ secrets.DBT_REDSHIFT_CI_USER }}
   DBT_REDSHIFT_CI_PASSWORD: ${{ secrets.DBT_REDSHIFT_CI_PASSWORD }}
   DBT_REDSHIFT_DEMO_DATABASE: ${{ secrets.DBT_REDSHIFT_DEMO_DATABASE }}
+  DBT_PROJECT_DIR: "."
   
 jobs:
   # action:
@@ -93,18 +94,18 @@ jobs:
           with open('./integration_tests/profiles/redshift/profiles.yml', 'w') as f:
               yaml.dump(profile, f, default_flow_style=False)
           EOF
-        working-directory: ci_testing
+        working-directory: 
 
       - name: dbt deps
         run: dbt deps --profiles-dir ./integration_tests/profiles/redshift
-        working-directory: ci_testing
+        working-directory: ${{ env.DBT_PROJECT_DIR }}
 
       - name: dbt debug
         run: dbt debug --profiles-dir ./integration_tests/profiles/redshift
-        working-directory: ci_testing
+        working-directory: ${{ env.DBT_PROJECT_DIR }}
 
       - name: dbt build
         run: |
           dbt build --full-refresh --profiles-dir ./integration_tests/profiles/redshift \
             --vars '{"use_synthetic_data": true,"clinical_enabled": true,"claims_enabled": true,"provider_attribution_enabled":true,"fhir_preprocessing_enabled":true}'
-        working-directory: ci_testing
+        working-directory: ${{ env.DBT_PROJECT_DIR }}
