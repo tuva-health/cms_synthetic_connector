@@ -2,6 +2,7 @@ name: Run dbt on Redshift
 
 on:
   push:
+  pull_request:
     branches:
       - main
   workflow_dispatch: # Allows manual trigger from UI
