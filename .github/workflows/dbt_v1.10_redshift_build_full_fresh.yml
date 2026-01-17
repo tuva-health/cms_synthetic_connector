@@ -42,20 +42,20 @@ jobs:
       # 4. Install dbt dependencies (if you have packages.yml)
       - name: Install dbt dependencies
         working-directory: ${{ env.DBT_PROJECT_DIR }}
-        run: dbt deps
+        run: dbt deps --profiles-dir ./integration_tests/profiles/redshift
 
       # 5. Debug Connection (Optional but recommended)
       # This checks if profiles.yml can connect to Redshift
       - name: Test Connection
         working-directory: ${{ env.DBT_PROJECT_DIR }}
-        run: dbt debug
+        run: dbt debug --profiles-dir ./integration_tests/profiles/redshift
 
       # 6. Run dbt models
       - name: Run dbt models
         working-directory: ${{ env.DBT_PROJECT_DIR }}
-        run: dbt run
+        run: dbt run --profiles-dir ./integration_tests/profiles/redshift
 
       # 7. Test dbt models
       - name: Test dbt models
         working-directory: ${{ env.DBT_PROJECT_DIR }}
-        run: dbt test
+        run: dbt test --profiles-dir ./integration_tests/profiles/redshift
