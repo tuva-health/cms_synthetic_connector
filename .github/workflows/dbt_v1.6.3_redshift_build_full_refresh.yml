@@ -57,44 +57,44 @@ jobs:
           python -m pip install --upgrade pip
           pip install dbt-core==1.10.15 dbt-redshift
 
-      - name: Create dbt profile
-        env:
-          REDSHIFT_HOST: ${{ secrets.DBT_REDSHIFT_HOST }}
-          REDSHIFT_USER: ${{ secrets.DBT_REDSHIFT_CI_USER }}
-          REDSHIFT_PASSWORD: ${{ secrets.DBT_REDSHIFT_CI_PASSWORD }}
-          REDSHIFT_DATABASE: ${{ secrets.DBT_REDSHIFT_DEMO_DATABASE }}
-          SCHEMA_SUFFIX: ${{ github.run_id }}
-        run: |
-          mkdir -p ./integration_tests/profiles/redshift
-          python3 << 'EOF'
-          import os
-          import yaml
+      # - name: Create dbt profile
+      #   env:
+      #     REDSHIFT_HOST: ${{ secrets.DBT_REDSHIFT_HOST }}
+      #     REDSHIFT_USER: ${{ secrets.DBT_REDSHIFT_CI_USER }}
+      #     REDSHIFT_PASSWORD: ${{ secrets.DBT_REDSHIFT_CI_PASSWORD }}
+      #     REDSHIFT_DATABASE: ${{ secrets.DBT_REDSHIFT_DEMO_DATABASE }}
+      #     SCHEMA_SUFFIX: ${{ github.run_id }}
+      #   run: |
+      #     mkdir -p ./integration_tests/profiles/redshift
+      #     python3 << 'EOF'
+      #     import os
+      #     import yaml
           
-          profile = {
-              'default': {
-                  'outputs': {
-                      'dev': {
-                          'type': 'redshift',
-                          'host': os.environ['REDSHIFT_HOST'],
-                          'port': 5439,
-                          'user': os.environ['REDSHIFT_USER'],
-                          'password': os.environ['REDSHIFT_PASSWORD'],
-                          'dbname': os.environ['REDSHIFT_DATABASE'],
-                          'schema': f"ci_test_{os.environ['SCHEMA_SUFFIX']}",
-                          'threads': 32,
-                          'sslmode': 'require',
-                          'is_serverless': True,
-                          'connect_timeout': 120
-                      }
-                  },
-                  'target': 'dev'
-              }
-          }
+      #     profile = {
+      #         'default': {
+      #             'outputs': {
+      #                 'dev': {
+      #                     'type': 'redshift',
+      #                     'host': os.environ['REDSHIFT_HOST'],
+      #                     'port': 5439,
+      #                     'user': os.environ['REDSHIFT_USER'],
+      #                     'password': os.environ['REDSHIFT_PASSWORD'],
+      #                     'dbname': os.environ['REDSHIFT_DATABASE'],
+      #                     'schema': f"ci_test_{os.environ['SCHEMA_SUFFIX']}",
+      #                     'threads': 32,
+      #                     'sslmode': 'require',
+      #                     'is_serverless': True,
+      #                     'connect_timeout': 120
+      #                 }
+      #             },
+      #             'target': 'dev'
+      #         }
+      #     }
           
-          with open('./integration_tests/profiles/redshift/profiles.yml', 'w') as f:
-              yaml.dump(profile, f, default_flow_style=False)
-          EOF
-        working-directory: 
+      #     with open('./integration_tests/profiles/redshift/profiles.yml', 'w') as f:
+      #         yaml.dump(profile, f, default_flow_style=False)
+      #     EOF
+      #   working-directory: 
 
       - name: dbt deps
         run: dbt deps --profiles-dir ./integration_tests/profiles/redshift
