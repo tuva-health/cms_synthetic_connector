@@ -1,10 +1,10 @@
-name: Redshift CICD Full Refresh
+name: Snowflake CICD Full Refresh
 
 on:
   push:
-  # pull_request:
-  #   branches:
-  #     - main
+  pull_request:
+    branches:
+      - main
   workflow_dispatch: # Allows manual trigger from UI
 
 env:
@@ -15,15 +15,18 @@ env:
 
 jobs:
   dbt_run:
-    name: dbt full refresh and test on Redshift
+    name: dbt full refresh and test on Snowflake
     runs-on: ubuntu-latest
 
     # Set the environment variables dbt needs to connect
     env:
-      REDSHIFT_HOST: ${{ secrets.DBT_REDSHIFT_HOST }}
-      REDSHIFT_USER: ${{ secrets.DBT_REDSHIFT_CI_USER }}
-      REDSHIFT_PASSWORD: ${{ secrets.DBT_REDSHIFT_CI_PASSWORD }}
-      REDSHIFT_DB: ${{ secrets.DBT_REDSHIFT_DEMO_DATABASE }}
+      DBT_SNOWFLAKE_DEV_ACCOUNT: ${{ secrets.DBT_SNOWFLAKE_DEV_ACCOUNT }}
+      DBT_SNOWFLAKE_DEV_CI_DATABASE: ${{ secrets.DBT_SNOWFLAKE_DEV_CI_DATABASE }}
+      DBT_SNOWFLAKE_DEV_CI_PASSWORD: ${{ secrets.DBT_SNOWFLAKE_DEV_CI_PASSWORD }}  
+      DBT_SNOWFLAKE_DEV_CI_ROLE: ${{ secrets.DBT_SNOWFLAKE_DEV_CI_ROLE }}
+      DBT_SNOWFLAKE_DEV_CI_SCHEMA: ${{ secrets.DBT_SNOWFLAKE_DEV_CI_SCHEMA }}
+      DBT_SNOWFLAKE_DEV_CI_USER: ${{ secrets.DBT_SNOWFLAKE_DEV_CI_USER }}
+      DBT_SNOWFLAKE_DEV_CI_WAREHOUSE: ${{ secrets.DBT_SNOWFLAKE_DEV_CI_WAREHOUSE }}
 
     steps:
       # 1. Checkout the code (Crucial step!)
@@ -35,7 +38,8 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.10"
-
+      
+      # 3. Quick check that secrets are available 
       - name: Debug Secrets
         env:
           MY_HOST: ${{ secrets.REDSHIFT_HOST }}
@@ -53,20 +57,20 @@ jobs:
       # 4. Install dbt dependencies (if you have packages.yml)
       - name: Install dbt dependencies
         working-directory: ${{ env.DBT_PROJECT_DIR }}
-        run: dbt deps --profiles-dir ./integration_tests/profiles/redshift
+        run: dbt deps --profiles-dir ./integration_tests/profiles/snowflake
 
       # 5. Debug Connection (Optional but recommended)
       # This checks if profiles.yml can connect to Redshift
       - name: Test Connection
         working-directory: ${{ env.DBT_PROJECT_DIR }}
-        run: dbt debug --profiles-dir ./integration_tests/profiles/redshift
+        run: dbt debug --profiles-dir ./integration_tests/profiles/snowflake
 
       # 6. Run dbt models
       - name: Run dbt models
         working-directory: ${{ env.DBT_PROJECT_DIR }}
-        run: dbt run --profiles-dir ./integration_tests/profiles/redshift
+        run: dbt run --profiles-dir ./integration_tests/profiles/snowflake
 
       # 7. Test dbt models
       - name: Test dbt models
         working-directory: ${{ env.DBT_PROJECT_DIR }}
-        run: dbt test --profiles-dir ./integration_tests/profiles/redshift
+        run: dbt test --profiles-dir ./integration_tests/profiles/snowflake
