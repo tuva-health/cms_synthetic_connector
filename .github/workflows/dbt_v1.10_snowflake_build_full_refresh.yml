@@ -52,7 +52,7 @@ jobs:
 
       # 3. Install dbt-redshift
       - name: Install dbt
-        run: pip install dbt-redshift
+        run: pip install dbt-snowflake
 
       # 4. Install dbt dependencies (if you have packages.yml)
       - name: Install dbt dependencies
