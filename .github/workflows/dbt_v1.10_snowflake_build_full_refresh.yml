@@ -42,12 +42,12 @@ jobs:
       # 3. Quick check that secrets are available 
       - name: Debug Secrets
         env:
-          MY_HOST: ${{ secrets.REDSHIFT_HOST }}
+          MY_HOST: ${{ secrets.DBT_TUVA_SNOWFLAKE_ACCOUNT }}
         run: |
           if [ -z "$MY_HOST" ]; then
-            echo "❌ Error: REDSHIFT_HOST is empty!"
+            echo "❌ Error: DBT_TUVA_SNOWFLAKE_ACCOUNT is empty!"
           else
-            echo "✅ Success: REDSHIFT_HOST is found (Length: ${#MY_HOST})"
+            echo "✅ Success: DBT_TUVA_SNOWFLAKE_ACCOUNT is found (Length: ${#MY_HOST})"
           fi
 
       # 3. Install dbt-redshift
@@ -66,11 +66,6 @@ jobs:
         run: dbt debug --profiles-dir ./integration_tests/profiles/snowflake
 
       # 6. Run dbt models
-      - name: Run dbt models
+      - name: Run build models
         working-directory: ${{ env.DBT_PROJECT_DIR }}
-        run: dbt run --profiles-dir ./integration_tests/profiles/snowflake
-
-      # 7. Test dbt models
-      - name: Test dbt models
-        working-directory: ${{ env.DBT_PROJECT_DIR }}
-        run: dbt test --profiles-dir ./integration_tests/profiles/snowflake
+        run: dbt build --full-refresh --profiles-dir ./integration_tests/profiles/snowflake
