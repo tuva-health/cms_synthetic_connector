@@ -1,4 +1,4 @@
-cms_synthetic_connector: # Replace with your project name
+default: # Replace with your project name
   target: ci
   outputs:
     ci:
