@@ -64,7 +64,7 @@ jobs:
           REDSHIFT_DATABASE: ${{ secrets.DBT_REDSHIFT_DEMO_DATABASE }}
           SCHEMA_SUFFIX: ${{ github.run_id }}
         run: |
-          mkdir -p ./profiles/redshift
+          mkdir -p ./integration_tests/profiles/redshift
           python3 << 'EOF'
           import os
           import yaml
@@ -90,21 +90,21 @@ jobs:
               }
           }
           
-          with open('./profiles/redshift/profiles.yml', 'w') as f:
+          with open('./integration_tests/profiles/redshift/profiles.yml', 'w') as f:
               yaml.dump(profile, f, default_flow_style=False)
           EOF
         working-directory: ci_testing
 
       - name: dbt deps
-        run: dbt deps --profiles-dir ./profiles/redshift
+        run: dbt deps --profiles-dir ./integration_tests/profiles/redshift
         working-directory: ci_testing
 
       - name: dbt debug
-        run: dbt debug --profiles-dir ./profiles/redshift
+        run: dbt debug --profiles-dir ./integration_tests/profiles/redshift
         working-directory: ci_testing
 
       - name: dbt build
         run: |
-          dbt build --full-refresh --profiles-dir ./profiles/redshift \
+          dbt build --full-refresh --profiles-dir ./integration_tests/profiles/redshift \
             --vars '{"use_synthetic_data": true,"clinical_enabled": true,"claims_enabled": true,"provider_attribution_enabled":true,"fhir_preprocessing_enabled":true}'
         working-directory: ci_testing
