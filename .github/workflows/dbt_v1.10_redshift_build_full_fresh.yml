@@ -36,6 +36,16 @@ jobs:
         with:
           python-version: "3.10"
 
+      - name: Debug Secrets
+        env:
+          MY_HOST: ${{ secrets.REDSHIFT_HOST }}
+        run: |
+          if [ -z "$MY_HOST" ]; then
+            echo "❌ Error: REDSHIFT_HOST is empty!"
+          else
+            echo "✅ Success: REDSHIFT_HOST is found (Length: ${#MY_HOST})"
+          fi
+
       # 3. Install dbt-redshift
       - name: Install dbt
         run: pip install dbt-redshift
