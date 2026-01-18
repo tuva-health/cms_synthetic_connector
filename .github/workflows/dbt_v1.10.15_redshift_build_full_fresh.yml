@@ -10,13 +10,13 @@ jobs:
     name: dbt full refresh and test on Redshift
     runs-on: ubuntu-latest
 
-    # Set the environment variables dbt needs to connect
     env:
-      # Project-level environment variables
+      # Environment variables
       DBT_PROJECT_DIR: "." 
       PYTHON_VERSION: "3.10"
       DBT_CORE_VERSION: "1.10.15"
-
+      
+      # Connection variables
       REDSHIFT_HOST: ${{ secrets.DBT_REDSHIFT_HOST }}
       REDSHIFT_USER: ${{ secrets.DBT_REDSHIFT_CI_USER }}
       REDSHIFT_PASSWORD: ${{ secrets.DBT_REDSHIFT_CI_PASSWORD }}
@@ -47,8 +47,3 @@ jobs:
       - name: Build dbt models
         working-directory: ${{ env.DBT_PROJECT_DIR }}
         run: dbt build --full-refresh --profiles-dir ./integration_tests/profiles/redshift
-      
-      - name: Get the result
-        if: ${{ always() }}
-        run: echo "${{ steps.dbt-build.outputs.result }}"
-        shell: bash

@@ -1,5 +1,4 @@
 name: Snowflake CICD Full Refresh
-
 on:
   pull_request:
     branches:
@@ -12,18 +11,18 @@ concurrency:
   # Don't cancel in-progress runs automatically
   cancel-in-progress: false
 
-env:
-  DBT_PROJECT_DIR: "." 
-  PYTHON_VERSION: "3.10"
-  DBT_CORE_VERSION: "1.10.15"
-
 jobs:
   dbt_run:
     name: dbt full refresh and test on Snowflake
     runs-on: ubuntu-latest
 
-    # Set the environment variables dbt needs to connect
     env:
+      # Environment variables
+      DBT_PROJECT_DIR: "." 
+      PYTHON_VERSION: "3.10"
+      DBT_CORE_VERSION: "1.10.15"
+
+      # Connection variables
       DBT_SNOWFLAKE_DEV_ACCOUNT: ${{ secrets.DBT_TUVA_SNOWFLAKE_ACCOUNT }}
       DBT_SNOWFLAKE_DEV_CI_DATABASE: ${{ secrets.DBT_TUVA_CI_DATABASE }}
       DBT_SNOWFLAKE_DEV_CI_PASSWORD: ${{ secrets.DBT_SNOWFLAKE_CI_PASSWORD }}  
@@ -57,8 +56,3 @@ jobs:
       - name: Run build models
         working-directory: ${{ env.DBT_PROJECT_DIR }}
         run: dbt build --full-refresh --profiles-dir ./integration_tests/profiles/snowflake
-
-      - name: Get the result
-        if: ${{ always() }}
-        run: echo "${{ steps.dbt-build.outputs.result }}"
-        shell: bash

@@ -11,6 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
+      # Environment variables
       PYTHON_VERSION: "3.10"
       DBT_PROJECT_DIR: "."
       DBT_CORE_VERSION: "1.10.15"
@@ -29,23 +30,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install dbt-core==${{ DBT_CORE_VERISON }} dbt-bigquery
 
-      - name: Create dbt profiles.yml for BigQuery
-        run: |
-          mkdir -p ./integration_tests/profiles/bigquery
-          echo "default:
-            outputs:
-              dev:
-                type: bigquery
-                method: service-account
-                project: dev-ci-testing
-                keyfile: ./creds.json
-                dataset: connector
-                threads: 8
-                timeout_seconds: 300
-                priority: interactive
-            target: dev" > ./integration_tests/profiles/bigquery/profiles.yml
-        working-directory: ${{ env.DBT_PROJECT_DIR }}
-
       - name: Create BigQuery credentials file
         run: |
           echo "${{ secrets.TUVA_BIGQUERY_TOKEN }}" | base64 --decode > ./creds.json
@@ -63,8 +47,3 @@ jobs:
         run: |
           dbt build --full-refresh --profiles-dir ./integration_tests/profiles/bigquery
         working-directory: ${{ env.DBT_PROJECT_DIR }}
-
-      - name: Get the result
-        if: ${{ always() }}
-        run: echo "${{ steps.dbt-build.outputs.result }}"
-        shell: bash
