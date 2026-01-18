@@ -29,6 +29,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install dbt-core==1.10.15 dbt-duckdb
 
+      # Create dbt profile for DuckDB/MotherdDuck, may move to checked-in file later
       - name: Create dbt profile for DuckDB/MotherDuck
         run: |
           mkdir -p ./integration_tests/profiles/duckdb
@@ -66,7 +67,7 @@ jobs:
         working-directory: ${{ env.DBT_PROJECT_DIR }}
 
       - name: dbt-deps
-        run: dbt deps --profiles-dir ./integration_tests/profiles/duckdb
+        run: dbt deps --profiles-dir ./integration_tests/profiles/b
         working-directory: ${{ env.DBT_PROJECT_DIR }}
 
       - name: dbt-debug
@@ -75,8 +76,7 @@ jobs:
 
       - name: dbt-build
         run: |
-          dbt build --full-refresh --profiles-dir ./integration_tests/profiles/duckdb \
-            --vars '{"use_synthetic_data": true,"clinical_enabled": true,"claims_enabled": true,"provider_attribution_enabled":true,"fhir_preprocessing_enabled":true}'
+          dbt build --full-refresh --profiles-dir ./integration_tests/profiles/duckdb
         working-directory: ${{ env.DBT_PROJECT_DIR }}
 
       - name: Get the result
