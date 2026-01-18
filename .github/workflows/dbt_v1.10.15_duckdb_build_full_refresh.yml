@@ -11,6 +11,11 @@ jobs:
     name: dbt full refresh and test on DuckDB/MotherDuck
     runs-on: ubuntu-latest
 
+    env:
+      PYTHON_VERSION: "3.10"
+      DBT_PROJECT_DIR: "."
+      MOTHERDUCK_TOKEN: ${{ secrets.DBT_MOTHERDUCK_TOKEN }}
+
     steps:
       - uses: actions/checkout@v4
 
@@ -25,11 +30,8 @@ jobs:
           pip install dbt-core==1.10.15 dbt-duckdb
 
       - name: Create dbt profile for DuckDB/MotherDuck
-        env:
-          MOTHERDUCK_TOKEN: ${{ secrets.DBT_MOTHERDUCK_TOKEN }}
-          DBT_PROJECT_DIR: "." 
         run: |
-          mkdir -p ./integration_tests/duckdb
+          mkdir -p ./integration_tests/profiles/duckdb
           python3 << 'EOF'
           import os
           import yaml
@@ -56,7 +58,7 @@ jobs:
               }
           }
           
-          with open('./integration_tests/duckdb/profiles.yml', 'w') as f:
+          with open('./integration_tests/profiles/duckdb/profiles.yml', 'w') as f:
               yaml.dump(profile, f, default_flow_style=False)
           
           print(f"Created DuckDB/MotherDuck profile with database: {db_name}")
