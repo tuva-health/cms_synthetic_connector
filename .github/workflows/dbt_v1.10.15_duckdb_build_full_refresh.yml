@@ -9,7 +9,7 @@ on:
 
 jobs:
   dbt_run:
-  name: name: dbt full refresh and test on DuckDB/MotherDuck
+  name: dbt full refresh and test on DuckDB/MotherDuck
   runs-on: ubuntu-latest
 
   steps:
