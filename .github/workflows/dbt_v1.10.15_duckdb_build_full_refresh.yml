@@ -1,14 +1,15 @@
 #######  DuckDB/MotherDuck
-name: Snowflake CICD Full Refresh
+name: DuckDB/MotherDuck CICD Full Refresh
 
 on:
   pull_request:
     branches:
       - main
   workflow_dispatch: # Allows manual trigger from UI
-  
+
 jobs:
   dbt_run:
+  name: name: dbt full refresh and test on DuckDB/MotherDuck
   runs-on: ubuntu-latest
 
   steps:
