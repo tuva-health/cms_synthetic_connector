@@ -1,5 +1,4 @@
 name: DuckDB/MotherDuck CICD Full Refresh
-
 on:
   pull_request:
     branches:
@@ -66,15 +65,15 @@ jobs:
           EOF
         working-directory: ${{ env.DBT_PROJECT_DIR }}
 
-      - name: dbt-deps
+      - name: Install dbt dependencies
         run: dbt deps --profiles-dir ./integration_tests/profiles/b
         working-directory: ${{ env.DBT_PROJECT_DIR }}
 
-      - name: dbt-debug
+      - name: Test Connection
         run: dbt debug --profiles-dir ./integration_tests/profiles/duckdb
         working-directory: ${{ env.DBT_PROJECT_DIR }}
 
-      - name: dbt-build
+      - name: Build dbt models (full-refresh)
         run: |
           dbt build --full-refresh --profiles-dir ./integration_tests/profiles/duckdb
         working-directory: ${{ env.DBT_PROJECT_DIR }}

@@ -13,10 +13,9 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  # 1. Define where your dbt project lives relative to the repo root
-  # If dbt is in the root, leave this as "."
-  # If dbt is in a subfolder, change to "./my_dbt_folder"
   DBT_PROJECT_DIR: "." 
+  PYTHON_VERSION: "3.10"
+  DBT_CORE_VERSION: "1.10.15"
 
 jobs:
   dbt_run:
@@ -34,45 +33,32 @@ jobs:
       DBT_SNOWFLAKE_DEV_CI_WAREHOUSE: ${{ secrets.DBT_SNOWFLAKE_CI_WAREHOUSE }}
 
     steps:
-      # 1. Checkout the code
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # 2. Install Python
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.10"
-      
-      # 3. Quick check that secrets are available 
-      - name: Debug Secrets
-        env:
-          MY_HOST: ${{ secrets.DBT_TUVA_SNOWFLAKE_ACCOUNT }}
-        run: |
-          if [ -z "$MY_HOST" ]; then
-            echo "❌ Error: DBT_TUVA_SNOWFLAKE_ACCOUNT is empty!"
-          else
-            echo "✅ Success: DBT_TUVA_SNOWFLAKE_ACCOUNT is found (Length: ${#MY_HOST})"
-          fi
+          python-version: ${{ env.PYTHON_VERSION }}
 
-      # 3. Install dbt-snowflake
       - name: Install dbt
         run: |
           python -m pip install --upgrade pip
-          pip install dbt-core==1.10.15 dbt-snowflake
+          pip install dbt-core=${{ env.DBT_CORE_VERSION }} dbt-snowflake
 
-      # 4. Install dbt dependencies (if you have packages.yml)
       - name: Install dbt dependencies
         working-directory: ${{ env.DBT_PROJECT_DIR }}
         run: dbt deps --profiles-dir ./integration_tests/profiles/snowflake
 
-      # 5. Debug Connection (Optional but recommended)
-      # This checks if profiles.yml can connect to Snowflake
       - name: Test Connection
         working-directory: ${{ env.DBT_PROJECT_DIR }}
         run: dbt debug --profiles-dir ./integration_tests/profiles/snowflake
 
-      # 6. Run dbt models
       - name: Run build models
         working-directory: ${{ env.DBT_PROJECT_DIR }}
         run: dbt build --full-refresh --profiles-dir ./integration_tests/profiles/snowflake
+
+      - name: Get the result
+        if: ${{ always() }}
+        run: echo "${{ steps.dbt-build.outputs.result }}"
+        shell: bash
