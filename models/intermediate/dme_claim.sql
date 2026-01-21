@@ -1,6 +1,6 @@
 with dme as (
   SELECT * FROM
-  {% if False %} {{ ref('dme') }} {% else %} {{ source('cms_synthetic', 'dme') }} {% endif %}
+  {% if var('demo_data_only', false) %} {{ ref('dme') }} {% else %} {{ source('cms_synthetic', 'dme') }} {% endif %}
 ),
 
 

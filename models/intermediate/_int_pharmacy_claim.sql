@@ -1,6 +1,6 @@
 with pde as (
   SELECT * FROM
-  {% if False %} {{ ref('pde') }} {% else %} {{ source('cms_synthetic', 'pde') }} {% endif %}
+  {% if var('demo_data_only', false) %} {{ ref('pde') }} {% else %} {{ source('cms_synthetic', 'pde') }} {% endif %}
 )
 
 select

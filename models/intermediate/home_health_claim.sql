@@ -1,6 +1,6 @@
 with hha as (
   SELECT * FROM
-  {% if False %} {{ ref('hha') }} {% else %} {{ source('cms_synthetic', 'hha') }}{% endif %}
+  {% if var('demo_data_only', false) %} {{ ref('hha') }} {% else %} {{ source('cms_synthetic', 'hha') }}{% endif %}
 ),
 
 

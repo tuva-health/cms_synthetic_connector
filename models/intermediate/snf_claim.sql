@@ -1,6 +1,6 @@
 with snf as (
   SELECT * FROM
-  {% if False %} {{ ref('snf') }} {% else %} {{ source('cms_synthetic', 'snf') }}{% endif %}
+  {% if var('demo_data_only', false) %} {{ ref('snf') }} {% else %} {{ source('cms_synthetic', 'snf') }}{% endif %}
 ),
 
 snf_base_claim as (

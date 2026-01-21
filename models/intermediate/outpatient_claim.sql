@@ -1,6 +1,6 @@
 with outpatient as (
   SELECT * FROM
-  {% if False %} {{ ref('outpatient') }} {% else %} {{ source('cms_synthetic', 'outpatient') }}{% endif %}
+  {% if var('demo_data_only', false) %} {{ ref('outpatient') }} {% else %} {{ source('cms_synthetic', 'outpatient') }}{% endif %}
 ),
 
 

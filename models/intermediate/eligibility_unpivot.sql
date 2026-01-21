@@ -1,5 +1,5 @@
 with demographics as (
-    select * from {% if False %} {{ ref('beneficiary') }} {% else %} {{ source('cms_synthetic', 'beneficiary') }} {% endif %}
+    select * from {% if var('demo_data_only', false) %} {{ ref('beneficiary') }} {% else %} {{ source('cms_synthetic', 'beneficiary') }} {% endif %}
 ),
 
 year_from_file as (

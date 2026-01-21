@@ -1,6 +1,6 @@
 with inpatient as (
   SELECT * FROM
-  {% if False %} {{ ref('inpatient') }} {% else %} {{ source('cms_synthetic', 'inpatient') }}{% endif %}
+  {% if var('demo_data_only', false) %} {{ ref('inpatient') }} {% else %} {{ source('cms_synthetic', 'inpatient') }}{% endif %}
 ),
 
 inpatient_base_claim as (

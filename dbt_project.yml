@@ -6,7 +6,7 @@ profile: default
 
 vars:
   ## Demo Data Only variable, if true, seeds are used, if false, source data is expected (see models/_sourecs.yml for details)
-  demo_data_only: true
+  demo_data_only: false
 
   claims_enabled: true
   clinical_enabled: false

@@ -1,6 +1,6 @@
 with carrier as (
   SELECT * FROM
-  {% if False %} {{ ref('carrier') }} {% else %} {{ source('cms_synthetic', 'carrier') }} {% endif %}
+  {% if var('demo_data_only', false) %} {{ ref('carrier') }} {% else %} {{ source('cms_synthetic', 'carrier') }} {% endif %}
 ),
 
 carrier_base_claim as (

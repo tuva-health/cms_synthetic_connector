@@ -1,6 +1,6 @@
 with hospice as (
   SELECT * FROM
-  {% if False %} {{ ref('hospice') }} {% else %} {{ source('cms_synthetic', 'hospice') }}{% endif %}
+  {% if var('demo_data_only', false) %} {{ ref('hospice') }} {% else %} {{ source('cms_synthetic', 'hospice') }}{% endif %}
 ),
 
 
