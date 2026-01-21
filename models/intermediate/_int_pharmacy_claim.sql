@@ -1,3 +1,8 @@
+with pde as (
+  SELECT * FROM
+  {% if False %} {{ ref('pde') }} {% else %} {{ source('cms_synthetic', 'pde') }} {% endif %}
+)
+
 select
     cast(pde_id as {{ dbt.type_string() }}) as CLAIM_ID
     ,cast(1 as {{ dbt.type_string() }}) as CLAIM_LINE_NUMBER
@@ -24,4 +29,4 @@ select
     ,cast('pde' as {{ dbt.type_string() }}) as file_name
     ,cast(NULL as date ) as file_date
     ,cast(NULL as date ) as ingest_datetime
-from {{ ref('pde') }}
+from pde

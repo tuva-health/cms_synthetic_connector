@@ -1,9 +1,13 @@
-with snf_base_claim as (
+with snf as (
+  SELECT * FROM
+  {% if False %} {{ ref('snf') }} {% else %} {{ source('cms_synthetic', 'snf') }}{% endif %}
+),
+
+snf_base_claim as (
 
     select *
          , right(clm_thru_dt,4) as clm_thru_dt_year
-    from {{ ref('snf') }}
-
+    from snf
     /** filter out denied claims **/
 ),
 

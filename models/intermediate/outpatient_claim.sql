@@ -1,15 +1,21 @@
-with outpatient_base_claim as (
+with outpatient as (
+  SELECT * FROM
+  {% if False %} {{ ref('outpatient') }} {% else %} {{ source('cms_synthetic', 'outpatient') }}{% endif %}
+),
+
+
+outpatient_base_claim as (
 
     select *
          , right(clm_thru_dt,4) as clm_thru_dt_year
-    from {{ ref('outpatient') }}
+    from outpatient
 )
 
 , claim_start_date as (
 
   select l.clm_id
   ,min(coalesce(rev_cntr_dt,l.clm_thru_dt)) as claim_start_date
-  from {{ ref('outpatient') }} l
+  from outpatient l
   group by l.clm_id
 )
 

@@ -1,8 +1,14 @@
-with dme_base_claim as (
+with dme as (
+  SELECT * FROM
+  {% if False %} {{ ref('dme') }} {% else %} {{ source('cms_synthetic', 'dme') }} {% endif %}
+),
+
+
+dme_base_claim as (
 
     select *
          , right(clm_thru_dt,4) as clm_thru_dt_year
-    from {{ ref('dme') }}
+    from dme
     where carr_clm_pmt_dnl_cd <> '0'
     /** filter out denied claims **/
 )
@@ -11,7 +17,7 @@ with dme_base_claim as (
 
   select clm_id
   ,min(line_last_expns_dt) as claim_start_date
-  from {{ ref('dme') }} l
+  from dme l
   group by clm_id
 )
 
