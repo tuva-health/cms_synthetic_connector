@@ -4,8 +4,8 @@ default:
     ci:
       type: bigquery
       method: service-account
-      project: dev-ci-testing
-      keyfile: ./creds.json
+      project: "{{ env_var('TUVA_BIGQUERY_PROJECT') }}"
+      keyfile: "{{ env_var('TUVA_BIGQUERY_TOKEN') }}"
       dataset: connector
       threads: 8
       timeout_seconds: 300
