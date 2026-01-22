@@ -38,10 +38,10 @@ select
     , cast(NULL as {{ dbt.type_string() }} ) as discharge_disposition_code
     , cast(line_place_of_srvc_cd as {{ dbt.type_string() }} ) as place_of_service_code
     , cast(NULL as {{ dbt.type_string() }} ) as bill_type_code
-    , cast(NULL as {{ dbt.type_string() }} ) as ms_drg_code
-    , cast(NULL as {{ dbt.type_string() }} ) as apr_drg_code
+    , cast(NULL as {{ dbt.type_string() }} ) as drg_code_type
+    , cast(NULL as {{ dbt.type_string() }} ) as drg_code
     , cast(NULL as {{ dbt.type_string() }} ) as revenue_center_code
-    , cast(regexp_substr(line_srvc_cnt,'.') as integer) as service_unit_quantity
+    , cast({{ regexp_substr('line_srvc_cnt',"'.'") }} as integer) as service_unit_quantity
     , cast(hcpcs_cd as {{ dbt.type_string() }} ) as hcpcs_code
     , cast(hcpcs_1st_mdfr_cd as {{ dbt.type_string() }} ) as hcpcs_modifier_1
     , cast(hcpcs_2nd_mdfr_cd as {{ dbt.type_string() }} ) as hcpcs_modifier_2

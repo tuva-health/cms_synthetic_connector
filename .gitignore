@@ -6,3 +6,7 @@ logs/
 .DS_Store
 dbt_packages/
 package-lock.yml
+.direnv/
+.env
+.envrc
+requirements.txt

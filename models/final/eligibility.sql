@@ -159,7 +159,15 @@ joined as (
         , cast(eligibility_unpivot.orig_reason_for_entitlement as {{ dbt.type_string() }} ) as original_reason_entitlement_code
         , cast(eligibility_unpivot.dual_status as {{ dbt.type_string() }} ) as dual_status_code
         , cast(eligibility_unpivot.medicare_status as {{ dbt.type_string() }} ) as medicare_status_code
+        , cast(NULL as {{ dbt.type_string() }} ) as enrollment_status
+        , cast(NULL as {{ dbt.type_string() }} ) as hospice_flag
+        , cast(NULL as {{ dbt.type_string() }} ) as institutional_snp_flag
+        , cast(NULL as {{ dbt.type_string() }} ) as long_term_institutional_flag
+        , cast(NULL as {{ dbt.type_string() }} ) as group_id
+        , cast(NULL as {{ dbt.type_string() }} ) as group_name
+        , cast(NULL as {{ dbt.type_string() }} ) as name_suffix 
         , cast(NULL as {{ dbt.type_string() }} ) as first_name
+        , cast(NULL as {{ dbt.type_string() }} ) as middle_name
         , cast(NULL as {{ dbt.type_string() }} ) as last_name
         , cast(NULL as {{ dbt.type_string() }} ) as social_security_number
         , 'self' as subscriber_relation
@@ -168,8 +176,11 @@ joined as (
         , cast(medicare_state_fips.ssa_fips_state_name as {{ dbt.type_string() }} ) as state
         , cast(NULL as {{ dbt.type_string() }} ) as zip_code
         , cast(NULL as {{ dbt.type_string() }} ) as phone
+        , cast(NULL as {{ dbt.type_string() }} ) as email
+        , cast(NULL as {{ dbt.type_string() }} ) as ethnicity
         , 'cms_synthetic' as data_source
         , 'master_beneficiary_summary' as file_name
+        , cast(NULL as date ) as file_date
         , cast(NULL as date ) as ingest_datetime
         
 

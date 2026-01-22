@@ -42,7 +42,7 @@ select
     , cast(NULL as {{ dbt.type_string() }} ) as ms_drg_code
     , cast(NULL as {{ dbt.type_string() }} ) as apr_drg_code
     , cast(NULL as {{ dbt.type_string() }} ) as revenue_center_code
-    , cast(regexp_substr(line_srvc_cnt,'.') as integer) as service_unit_quantity
+    , cast({{ regexp_substr("line_srvc_cnt","'.'") }} as integer) as service_unit_quantity
     , cast(hcpcs_cd as {{ dbt.type_string() }} ) as hcpcs_code
     , cast(null as {{ dbt.type_string() }} ) as hcpcs_modifier_1
     , cast(hcpcs_2nd_mdfr_cd as {{ dbt.type_string() }} ) as hcpcs_modifier_2
@@ -174,6 +174,7 @@ select
     , 'cms_synthetic' as data_source
     , 1 as in_network_flag
     , 'carrier_claim' as file_name
+    , cast(NULL as date ) as file_date
     , cast(NULL as date ) as ingest_datetime
     
 from carrier_base_claim as b

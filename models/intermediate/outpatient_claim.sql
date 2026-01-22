@@ -56,10 +56,10 @@ select
         || cast(b.clm_srvc_clsfctn_type_cd as {{ dbt.type_string() }} )
         || cast(b.clm_freq_cd as {{ dbt.type_string() }} )
       as bill_type_code
-    , cast(NULL as {{ dbt.type_string() }} ) as ms_drg_code
-    , cast(NULL as {{ dbt.type_string() }} ) as apr_drg_code
+    , cast(NULL as {{ dbt.type_string() }} ) as drg_code_type
+    , cast(NULL as {{ dbt.type_string() }} ) as drg_code
     , cast(rev_cntr as {{ dbt.type_string() }} ) as revenue_center_code
-    , cast(regexp_substr(rev_cntr_unit_cnt, '.') as integer) as service_unit_quantity
+    , cast({{ regexp_substr("rev_cntr_unit_cnt", "'.'") }} as integer) as service_unit_quantity
     , cast(hcpcs_cd as {{ dbt.type_string() }} ) as hcpcs_code
     , cast(hcpcs_1st_mdfr_cd as {{ dbt.type_string() }} ) as hcpcs_modifier_1
     , cast(hcpcs_2nd_mdfr_cd as {{ dbt.type_string() }} ) as hcpcs_modifier_2

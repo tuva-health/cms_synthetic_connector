@@ -49,8 +49,8 @@ select
         || cast(b.clm_srvc_clsfctn_type_cd as {{ dbt.type_string() }} )
         || cast(b.clm_freq_cd as {{ dbt.type_string() }} ) end
       as bill_type_code
-    , cast(case when rev_cntr in ('0450','0451','0452','0459','0981') then null else b.clm_drg_cd end as {{ dbt.type_string() }} ) as ms_drg_code
-    , cast(NULL as {{ dbt.type_string() }} ) as apr_drg_code
+    , cast('ms_drg' as {{ dbt.type_string() }} ) as drg_code_type
+    , cast(case when rev_cntr in ('0450','0451','0452','0459','0981') then null else b.clm_drg_cd end as {{ dbt.type_string() }} ) as drg_code
     , cast(rev_cntr as {{ dbt.type_string() }} ) as revenue_center_code
     , cast(null as integer) as service_unit_quantity
     , cast(hcpcs_cd as {{ dbt.type_string() }} ) as hcpcs_code

@@ -22,5 +22,6 @@ select
     ,cast('cms_synthetic' as {{ dbt.type_string() }}) as DATA_SOURCE
     ,cast(1 as numeric) as in_network_flag
     ,cast('pde' as {{ dbt.type_string() }}) as file_name
+    ,cast(NULL as date ) as file_date
     ,cast(NULL as date ) as ingest_datetime
 from {{ ref('pde') }}
