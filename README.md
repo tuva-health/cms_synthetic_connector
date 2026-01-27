@@ -1,16 +1,10 @@
 [![Apache License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![dbt logo and version](https://img.shields.io/static/v1?logo=dbt&label=dbt-version&message=1.3.x&color=orange)
 
-# The Tuva Project Demo
+# CMS Synthetic Connector
 
-## 🧰 What does this project do?
+## Overview
 
-This demo provides a quick and easy way to run the Tuva Project.
- 
-This project loads the 10k synthetic members and claims from the [CMS Synthetic](https://data.cms.gov/collection/synthetic-medicare-enrollment-fee-for-service-claims-and-prescription-drug-event) dataset as seed files. It then transforms them to the Tuva Project input layer.
-
-To set up the Tuva Project with your own claims data or to better understand what the Tuva Project does, please review the ReadMe in [The Tuva Project](https://github.com/tuva-health/the_tuva_project) package for a detailed walkthrough and setup.
-
-For information on data models and to view the entire DAG check out our dbt [Docs](https://tuva-health.github.io/the_tuva_project_demo/).
+This dbt project loads the 10,000 patient synthetic claims dataset from [CMS](https://data.cms.gov/collection/synthetic-medicare-enrollment-fee-for-service-claims-and-prescription-drug-event) and transforms it into the Tuva data model.
 
 ## 🔌 Database Support
 
@@ -30,18 +24,6 @@ Complete the following steps to configure the project to run in your environment
    1. Add the dbt profile connected to your data warehouse.
 3. Run `dbt deps` to install the Tuva Project package. 
 4. Run `dbt build` to run the entire project with the built-in sample data.
-
-## 🙋🏻‍♀️ **How is this project maintained and can I contribute?**
-
-### Project Maintenance
-
-The Tuva Project team maintaining this project **only** maintains the latest version of the project. 
-We highly recommend you stay consistent with the latest version.
-
-### Contributions
-
-Have an opinion on the mappings? Notice any bugs when installing and running the project?
-If so, we highly encourage and welcome feedback!  While we work on a formal process in Github, we can be easily reached on our Slack community.
 
 ## 🤝 Community
 
