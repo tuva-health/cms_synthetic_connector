@@ -1,8 +1,13 @@
-with inpatient_base_claim as (
+with inpatient as (
+  SELECT * FROM
+  {% if var('demo_data_only', false) %} {{ ref('inpatient') }} {% else %} {{ source('cms_synthetic', 'inpatient') }}{% endif %}
+),
+
+inpatient_base_claim as (
 select 
   *
 , right(clm_thru_dt,4) as clm_thru_dt_year
-from {{ ref('inpatient') }}
+from inpatient
 ),
 
 /* Claim ID is not unique across claim types.  Concatenating original claim ID, claim year, and claim type. */
