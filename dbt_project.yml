@@ -2,11 +2,11 @@ name: 'cms_synthetic_connector'
 version: '0.1'
 config-version: 2
 
-profile: cms_synthetic
+profile: default
 
 vars:
   ## Demo Data Only variable, if true, seeds are used, if false, source data is expected (see models/_sourecs.yml for details)
-  # demo_data_only: true
+  demo_data_only: true
 
   claims_enabled: true
   clinical_enabled: false
