@@ -10,3 +10,4 @@ package-lock.yml
 .env
 .envrc
 requirements.txt
+.data/

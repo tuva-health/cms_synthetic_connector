@@ -49,6 +49,7 @@ models:
      schema: |
        {%- if var('tuva_schema_prefix',None) != None -%}_{{var('tuva_schema_prefix')}}_input_layer{% else %}input_layer{%- endif -%}
      tags: connector
+     materialized: table
 #
  - name: home_health_claim
    description: Claim line details of home health claims

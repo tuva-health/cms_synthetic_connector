@@ -5,6 +5,8 @@ config-version: 2
 profile: default
 
 vars:
+  ## Demo Data Only variable, if true, seeds are used, if false, source data is expected (see models/_sourecs.yml for details)
+  demo_data_only: true
 
   claims_enabled: true
   clinical_enabled: false
@@ -28,6 +30,9 @@ clean-targets:
   - "target"
   - "dbt_packages"
 
+# Seed configurations to load CMS Synthetic Connector data from tuva-public-resources if demo_data_only is enabled.
+# You CANNOT reference the_tuva_project.load_seed macro directly in the _seed.yml because of dbt's parsing order,
+# so we have to keep these post-hook's here.
 seeds:
   cms_synthetic_connector:
     beneficiary:

@@ -1,8 +1,14 @@
-with hha_base_claim as (
+with hha as (
+  SELECT * FROM
+  {% if var('demo_data_only', false) %} {{ ref('hha') }} {% else %} {{ source('cms_synthetic', 'hha') }}{% endif %}
+),
+
+
+hha_base_claim as (
 
     select *
          , right(clm_thru_dt,4) as clm_thru_dt_year
-    from {{ ref('hha') }}
+    from hha
 
     /** filter out denied claims **/
 )
@@ -25,7 +31,7 @@ with hha_base_claim as (
 
   select l.clm_id
   ,min(coalesce(rev_cntr_dt,l.clm_thru_dt)) as claim_start_date
-  from {{ ref('hha') }} l
+  from hha l
   group by l.clm_id
 )
 
@@ -58,7 +64,7 @@ select
     , cast(NULL as {{ dbt.type_string() }} ) as drg_code_type
     , cast(NULL as {{ dbt.type_string() }} ) as drg_code
     , cast(rev_cntr as {{ dbt.type_string() }} ) as revenue_center_code
-    , cast( {{regexp_substr("rev_cntr_unit_cnt", "'.'") }} as integer) as service_unit_quantity
+    , cast({{ regexp_substr("cast(rev_cntr_unit_cnt as " ~ dbt.type_string() ~ ")", "'.'") }} as integer) as service_unit_quantity
     , cast(hcpcs_cd as {{ dbt.type_string() }} ) as hcpcs_code
     , cast(hcpcs_1st_mdfr_cd as {{ dbt.type_string() }} ) as hcpcs_modifier_1
     , cast(hcpcs_2nd_mdfr_cd as {{ dbt.type_string() }} ) as hcpcs_modifier_2

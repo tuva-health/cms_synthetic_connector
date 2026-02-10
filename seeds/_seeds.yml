@@ -3,6 +3,7 @@ version: 2
 seeds:
   - name: beneficiary
     config:
+      enabled: "{{ var('demo_data_only', false) }}"
       schema: |
        {%- if var('tuva_schema_prefix',None) != None -%}_{{var('tuva_schema_prefix')}}_raw{% else %}raw{%- endif -%}
       tags: connector   
@@ -382,6 +383,7 @@ seeds:
 
   - name: carrier
     config:
+      enabled: "{{ var('demo_data_only', False) }}"
       schema: |
        {%- if var('tuva_schema_prefix',None) != None -%}_{{var('tuva_schema_prefix')}}_raw{% else %}raw{%- endif -%}
       tags: connector   
@@ -581,6 +583,7 @@ seeds:
 
   - name: dme
     config:
+      enabled: "{{ var('demo_data_only', False) }}"
       schema: |
        {%- if var('tuva_schema_prefix',None) != None -%}_{{var('tuva_schema_prefix')}}_raw{% else %}raw{%- endif -%}
       tags: connector  
@@ -763,6 +766,7 @@ seeds:
 
   - name: hha
     config:
+      enabled: "{{ var('demo_data_only', False) }}"
       schema: |
        {%- if var('tuva_schema_prefix',None) != None -%}_{{var('tuva_schema_prefix')}}_raw{% else %}raw{%- endif -%}
       tags: connector     
@@ -946,6 +950,7 @@ seeds:
 
   - name: hospice
     config:
+      enabled: "{{ var('demo_data_only', False) }}"
       schema: |
        {%- if var('tuva_schema_prefix',None) != None -%}_{{var('tuva_schema_prefix')}}_raw{% else %}raw{%- endif -%}
       tags: connector 
@@ -1125,6 +1130,7 @@ seeds:
     
   - name: inpatient
     config:
+      enabled: "{{ var('demo_data_only', False) }}"
       schema: |
        {%- if var('tuva_schema_prefix',None) != None -%}_{{var('tuva_schema_prefix')}}_raw{% else %}raw{%- endif -%}
       tags: connector   
@@ -1526,6 +1532,7 @@ seeds:
   
   - name: outpatient
     config:
+      enabled: "{{ var('demo_data_only', False) }}"
       schema: |
        {%- if var('tuva_schema_prefix',None) != None -%}_{{var('tuva_schema_prefix')}}_raw{% else %}raw{%- endif -%}
       tags: connector 
@@ -1857,6 +1864,7 @@ seeds:
 
   - name: pde
     config:
+      enabled: "{{ var('demo_data_only', False) }}"
       schema: |
        {%- if var('tuva_schema_prefix',None) != None -%}_{{var('tuva_schema_prefix')}}_raw{% else %}raw{%- endif -%}
       tags: connector 
@@ -1936,6 +1944,7 @@ seeds:
     
   - name: snf
     config:
+      enabled: "{{ var('demo_data_only', False) }}"
       schema: |
        {%- if var('tuva_schema_prefix',None) != None -%}_{{var('tuva_schema_prefix')}}_raw{% else %}raw{%- endif -%}
       tags: connector     
@@ -2260,4 +2269,3 @@ seeds:
           {%- if target.type in ("bigquery", "databricks") -%} string {%- else -%} varchar(255) {%- endif -%}
         RNDRNG_PHYSN_NPI: |
           {%- if target.type in ("bigquery", "databricks") -%} string {%- else -%} varchar(255) {%- endif -%}
-

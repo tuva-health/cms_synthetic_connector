@@ -4,10 +4,10 @@ default:
     ci:
       type: bigquery
       method: service-account
-      project: "{{ env_var('TUVA_BIGQUERY_PROJECT') }}"
-      keyfile: "{{ env_var('TUVA_BIGQUERY_TOKEN') }}"
+      keyfile: ./creds.json
+      project: "{{ env_var('DBT_BIGQUERY_CI_PROJECT') }}"
       dataset: connector
-      threads: 8
+      threads: 4
       timeout_seconds: 300
       location: US
       priority: interactive

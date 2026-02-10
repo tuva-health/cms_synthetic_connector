@@ -1,8 +1,13 @@
-with carrier_base_claim as (
+with carrier as (
+  SELECT * FROM
+  {% if var('demo_data_only', false) %} {{ ref('carrier') }} {% else %} {{ source('cms_synthetic', 'carrier') }} {% endif %}
+),
+
+carrier_base_claim as (
 
     select *
          , right(clm_thru_dt,4) as clm_thru_dt_year
-    from {{ ref('carrier') }}
+    from carrier
     where carr_clm_pmt_dnl_cd <> '0'
     /** filter out denied claims **/
 
@@ -12,7 +17,7 @@ with carrier_base_claim as (
 
   select l.clm_id
   ,min(l.line_last_expns_dt) as claim_start_date
-  from {{ ref('carrier') }} l
+  from carrier l
   group by l.clm_id
 )
 
@@ -42,7 +47,7 @@ select
     , cast(NULL as {{ dbt.type_string() }} ) as ms_drg_code
     , cast(NULL as {{ dbt.type_string() }} ) as apr_drg_code
     , cast(NULL as {{ dbt.type_string() }} ) as revenue_center_code
-    , cast({{ regexp_substr("line_srvc_cnt","'.'") }} as integer) as service_unit_quantity
+    , cast({{ regexp_substr("cast(line_srvc_cnt as " ~ dbt.type_string() ~ ")", "'.'") }} as integer) as service_unit_quantity
     , cast(hcpcs_cd as {{ dbt.type_string() }} ) as hcpcs_code
     , cast(null as {{ dbt.type_string() }} ) as hcpcs_modifier_1
     , cast(hcpcs_2nd_mdfr_cd as {{ dbt.type_string() }} ) as hcpcs_modifier_2

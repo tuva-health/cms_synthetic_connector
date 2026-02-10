@@ -22,14 +22,14 @@ medicare_state_fips as (
 add_row_num as (
 
     select
-          desy_sort_key
+          bene_id
         , enrollment_date
         , row_number() over (
-            partition by desy_sort_key
+            partition by bene_id
             order by enrollment_date
           ) as row_num
         , case
-            when medicare_status in (null, '00') and dual_status in (null, '00', '99', 'NA') then 1
+            when mdcr_status_code in (null, '00') and dual_stus_cd in (null, '00', '99', 'NA') then 1
             --when hmo_status <> '0' then 1 --  MA coverage
             --when entitlement not in ('3','C') then 1 --Doesn't have both Part A and B
             else 0
@@ -45,7 +45,7 @@ add_row_num as (
 remove_disenrolled_months as (
 
      select
-          desy_sort_key
+          bene_id
         , enrollment_date
         , row_num
         , disenrolled_flag
@@ -57,11 +57,11 @@ remove_disenrolled_months as (
 add_lag_enrollment as (
 
     select
-          desy_sort_key
+          bene_id
         , enrollment_date
         , row_num
         , lag(enrollment_date) over (
-            partition by desy_sort_key
+            partition by bene_id
             order by row_num
           ) as lag_enrollment
     from remove_disenrolled_months
@@ -71,7 +71,7 @@ add_lag_enrollment as (
 calculate_lag_diff as (
 
     select
-          desy_sort_key
+          bene_id
         , enrollment_date
         , row_num
         , lag_enrollment
@@ -83,7 +83,7 @@ calculate_lag_diff as (
 calculate_gaps as (
 
      select
-          desy_sort_key
+          bene_id
         , enrollment_date
         , row_num
         , lag_enrollment
@@ -99,12 +99,12 @@ calculate_gaps as (
 calculate_groups as (
 
      select
-          desy_sort_key
+          bene_id
         , enrollment_date
         , row_num
         , gap_flag
         , sum(gap_flag) over (
-            partition by desy_sort_key
+            partition by bene_id
             order by row_num
             rows between unbounded preceding and current row
           ) as row_group
@@ -115,22 +115,22 @@ calculate_groups as (
 enrollment_span as (
 
     select
-          desy_sort_key
+          bene_id
         , row_group
         , min(enrollment_date) as enrollment_start_date
         , max(enrollment_date) as enrollment_end_date_max
         , last_day(max(enrollment_date)) as enrollment_end_date_last
     from calculate_groups
-    group by desy_sort_key, row_group
+    group by bene_id, row_group
 
 ),
 
 joined as (
 
     select
-          cast(enrollment_span.desy_sort_key as {{ dbt.type_string() }} ) as patient_id
-        , cast(enrollment_span.desy_sort_key as {{ dbt.type_string() }} ) as member_id
-        , cast(enrollment_span.desy_sort_key as {{ dbt.type_string() }} ) as subscriber_id
+          cast(enrollment_span.bene_id as {{ dbt.type_string() }} ) as person_id
+        , cast(enrollment_span.bene_id as {{ dbt.type_string() }} ) as member_id
+        , cast(enrollment_span.bene_id as {{ dbt.type_string() }} ) as subscriber_id
         , case eligibility_unpivot.sex_code
                when '0' then 'unknown'
                when '1' then 'male'
@@ -157,8 +157,8 @@ joined as (
         , 'medicare' as payer_type
         , 'medicare' as plan
         , cast(eligibility_unpivot.orig_reason_for_entitlement as {{ dbt.type_string() }} ) as original_reason_entitlement_code
-        , cast(eligibility_unpivot.dual_status as {{ dbt.type_string() }} ) as dual_status_code
-        , cast(eligibility_unpivot.medicare_status as {{ dbt.type_string() }} ) as medicare_status_code
+        , cast(eligibility_unpivot.dual_stus_cd as {{ dbt.type_string() }} ) as dual_status_code
+        , cast(eligibility_unpivot.mdcr_status_code as {{ dbt.type_string() }} ) as medicare_status_code
         , cast(NULL as {{ dbt.type_string() }} ) as enrollment_status
         , cast(NULL as {{ dbt.type_string() }} ) as hospice_flag
         , cast(NULL as {{ dbt.type_string() }} ) as institutional_snp_flag
@@ -182,17 +182,11 @@ joined as (
         , 'master_beneficiary_summary' as file_name
         , cast(NULL as date ) as file_date
         , cast(NULL as date ) as ingest_datetime
-        
-
     from enrollment_span
          left join eligibility_unpivot
-            on enrollment_span.desy_sort_key = eligibility_unpivot.desy_sort_key
+            on enrollment_span.bene_id = eligibility_unpivot.bene_id
             and enrollment_span.enrollment_end_date_max = eligibility_unpivot.enrollment_date
          left join medicare_state_fips
             on eligibility_unpivot.state_code = medicare_state_fips.ssa_fips_state_code
 
 )
-
-select *
-,member_id as person_id
- from joined
